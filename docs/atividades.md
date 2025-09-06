@@ -141,16 +141,6 @@ Este plano foi desenhado para ser realista dentro da sua restrição de 3 horas 
     * **Opção 2 (Se tudo estiver OK):** Use este tempo para refatorar o código (melhorar nomes de variáveis, organizar funções) ou para aprimorar a documentação.
     * **Opção 3 (Se estiver adiantado):** Comece a pesquisar e planejar as bibliotecas para a próxima fase (Pandas, Scikit-learn).
 
----
-
-Ao final deste cronograma, você terá completado a primeira exigência do Tech Challenge de forma robusta e profissional. A API estará funcional, os dados estarão sendo armazenados, e tudo estará documentado no GitHub.
-
-
----
-
-Perfeito. Fase 1 concluída com sucesso. Agora, vamos mergulhar na inteligência do nosso projeto.
-
-Como seu gerente de projetos, preparei o cronograma para a segunda fase, focada na construção do cérebro da nossa aplicação: o modelo de Machine Learning. Manteremos o mesmo ritmo de 3 horas diárias, com um plano detalhado para garantir que cada passo seja executado com precisão.
 
 ---
 
@@ -257,16 +247,6 @@ Como seu gerente de projetos, preparei o cronograma para a segunda fase, focada 
     * **Opção 2 (Ajuste de Hiperparâmetros):** Pesquisar e aplicar técnicas como `GridSearchCV` para encontrar os melhores parâmetros para o seu modelo.
     * **Opção 3 (Revisão):** Revisar todo o trabalho da fase, garantindo que a documentação está clara e o código é legível.
 
----
-
-Com o término desta fase, você terá o coração do seu projeto pronto: um modelo de Machine Learning treinado, avaliado e salvo, pronto para ser colocado em produção.
-
-
----
-
-Ok, vamos para a reta final. A inteligência do projeto está construída; agora, precisamos dar vida a ela e prepará-la para a apresentação.
-
-Com a data de entrega final (07/10) se aproximando, o cronograma para esta próxima fase será intenso e focado em entregar um resultado funcional e polido. A partir de agora, também planejaremos as atividades de documentação e apresentação em paralelo.
 
 ---
 
@@ -324,6 +304,3 @@ Com a data de entrega final (07/10) se aproximando, o cronograma para esta próx
     * **Atividade:** Crie o arquivo `.txt` final contendo o link para o seu repositório no GitHub e o link para o vídeo no YouTube (ou outra plataforma).
     * **Atividade:** **Submeta o projeto.**
 
----
-
-Este cronograma é agressivo, mas totalmente factível. Ele te levará a ter um projeto completo e bem-apresentado até o final do prazo. Foco total nesta última semana.

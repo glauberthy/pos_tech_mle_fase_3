@@ -52,6 +52,3 @@
     * **Atividade:** Crie o arquivo `.txt` final contendo o link para o seu repositório no GitHub e o link para o vídeo no YouTube (ou outra plataforma).
     * **Atividade:** **Submeta o projeto.**
 
----
-
-Este cronograma é agressivo, mas totalmente factível. Ele te levará a ter um projeto completo e bem-apresentado até o final do prazo. Foco total nesta última semana.

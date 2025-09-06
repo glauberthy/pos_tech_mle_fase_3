@@ -101,15 +101,3 @@
     * **Opção 2 (Ajuste de Hiperparâmetros):** Pesquisar e aplicar técnicas como `GridSearchCV` para encontrar os melhores parâmetros para o seu modelo.
     * **Opção 3 (Revisão):** Revisar todo o trabalho da fase, garantindo que a documentação está clara e o código é legível.
 
----
-
-Com o término desta fase, você terá o coração do seu projeto pronto: um modelo de Machine Learning treinado, avaliado e salvo, pronto para ser colocado em produção.
-
-
----
-
-Ok, vamos para a reta final. A inteligência do projeto está construída; agora, precisamos dar vida a ela e prepará-la para a apresentação.
-
-Com a data de entrega final (07/10) se aproximando, o cronograma para esta próxima fase será intenso e focado em entregar um resultado funcional e polido. A partir de agora, também planejaremos as atividades de documentação e apresentação em paralelo.
-
----

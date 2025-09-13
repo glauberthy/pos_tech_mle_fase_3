@@ -5,6 +5,7 @@ from .models import Passageiro
 
 DATABASE_FILE = "passageiros.db"
 
+
 def create_db_and_tables():
     """
     Cria o banco de dados e a tabela 'passageiros' se eles não existirem.
@@ -14,28 +15,28 @@ def create_db_and_tables():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS passageiros (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        Gender TEXT,
-        Customer_Type TEXT,
-        Age INTEGER,
-        Type_of_Travel TEXT,
-        Class TEXT,
-        Flight_Distance INTEGER,
-        Inflight_wifi_service INTEGER,
-        Departure_Arrival_time_convenient INTEGER,
-        Ease_of_Online_booking INTEGER,
-        Gate_location INTEGER,
-        Food_and_drink INTEGER,
-        Online_boarding INTEGER,
-        Seat_comfort INTEGER,
-        Inflight_entertainment INTEGER,
-        On_board_service INTEGER,
-        Leg_room_service INTEGER,
-        Baggage_handling INTEGER,
-        Checkin_service INTEGER,
-        Inflight_service INTEGER,
-        Cleanliness INTEGER,
-        Departure_Delay_in_Minutes INTEGER,
-        Arrival_Delay_in_Minutes REAL
+        gender TEXT,
+        customer_type TEXT,
+        age INTEGER,
+        type_of_travel TEXT,
+        class TEXT,
+        flight_distance INTEGER,
+        inflight_wifi_service INTEGER,
+        departure_arrival_time_convenient INTEGER,
+        ease_of_online_booking INTEGER,
+        gate_location INTEGER,
+        food_and_drink INTEGER,
+        online_boarding INTEGER,
+        seat_comfort INTEGER,
+        inflight_entertainment INTEGER,
+        on_board_service INTEGER,
+        leg_room_service INTEGER,
+        baggage_handling INTEGER,
+        checkin_service INTEGER,
+        inflight_service INTEGER,
+        cleanliness INTEGER,
+        departure_delay_in_minutes INTEGER,
+        arrival_delay_in_minutes REAL
     )
     """)
     conn.commit()
@@ -54,25 +55,25 @@ def insert_passageiro(passageiro: Passageiro):
     cursor.execute(
         """
         INSERT INTO passageiros (
-            Gender, Customer_Type, Age, Type_of_Travel, Class, Flight_Distance,
-            Inflight_wifi_service, Departure_Arrival_time_convenient,
-            Ease_of_Online_booking, Gate_location, Food_and_drink, Online_boarding,
-            Seat_comfort, Inflight_entertainment, On_board_service, Leg_room_service,
-            Baggage_handling, Checkin_service, Inflight_service, Cleanliness,
-            Departure_Delay_in_Minutes, Arrival_Delay_in_Minutes
+            gender, customer_type, age, type_of_travel, class, flight_distance,
+            inflight_wifi_service, departure_arrival_time_convenient,
+            ease_of_online_booking, gate_location, food_and_drink, online_boarding,
+            seat_comfort, inflight_entertainment, on_board_service, leg_room_service,
+            baggage_handling, checkin_service, inflight_service, cleanliness,
+            departure_delay_in_minutes, arrival_delay_in_minutes
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
-            passageiro.Gender, passageiro.Customer_Type, passageiro.Age,
-            passageiro.Type_of_Travel, passageiro.Class, passageiro.Flight_Distance,
-            passageiro.Inflight_wifi_service, passageiro.Departure_Arrival_time_convenient,
-            passageiro.Ease_of_Online_booking, passageiro.Gate_location,
-            passageiro.Food_and_drink, passageiro.Online_boarding,
-            passageiro.Seat_comfort, passageiro.Inflight_entertainment,
-            passageiro.On_board_service, passageiro.Leg_room_service,
-            passageiro.Baggage_handling, passageiro.Checkin_service,
-            passageiro.Inflight_service, passageiro.Cleanliness,
-            passageiro.Departure_Delay_in_Minutes, passageiro.Arrival_Delay_in_Minutes
+            passageiro.gender, passageiro.customer_type, passageiro.age,
+            passageiro.type_of_travel, passageiro.class_, passageiro.flight_distance,
+            passageiro.inflight_wifi_service, passageiro.departure_arrival_time_convenient,
+            passageiro.ease_of_online_booking, passageiro.gate_location,
+            passageiro.food_and_drink, passageiro.online_boarding,
+            passageiro.seat_comfort, passageiro.inflight_entertainment,
+            passageiro.on_board_service, passageiro.leg_room_service,
+            passageiro.baggage_handling, passageiro.checkin_service,
+            passageiro.inflight_service, passageiro.cleanliness,
+            passageiro.departure_delay_in_minutes, passageiro.arrival_delay_in_minutes
         )
     )
     

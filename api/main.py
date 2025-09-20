@@ -12,7 +12,7 @@ from . import database
 async def lifespan(app: FastAPI):
     print("Iniciando a API e carregando o modelo...")
     # Carrega o modelo e anexa-o ao estado da aplicação
-    app.state.model = joblib.load('models/modelo_satisfacao_passageiros_v1.joblib')
+    app.state.model = joblib.load('models/modelo_final_otimizado_v1.joblib')
     database.create_db_and_tables()
     yield
     print("Desligando a API...")

@@ -22,8 +22,8 @@ Este projeto é uma solução completa de Machine Learning, desenvolvida para o 
 
 Assista à apresentação completa do projeto, onde detalhamos o problema de negócio, a arquitetura da solução, a análise de dados e a demonstração da aplicação em funcionamento. Este vídeo cumpre o requisito de **storytelling e vídeo explicativo** do desafio.
 
-<a href="URL_DO_SEU_VIDEO_NO_YOUTUBE_AQUI" target="_blank">
-  <img src="https://img.youtube.com/vi/URL_DO_SEU_VIDEO_NO_YOUTUBE_AQUI/hqdefault.jpg" alt="Apresentação do Projeto - Tech Challenge Pós Tech MLE" width="400"/>
+<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">
+  <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Apresentação do Projeto - Tech Challenge Pós Tech MLE" width="400"/>
 </a>
 
 

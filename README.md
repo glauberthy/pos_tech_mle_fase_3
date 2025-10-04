@@ -106,7 +106,7 @@ Uma companhia aérea busca transformar sua abordagem de reativa para proativa na
 O modelo final escolhido foi um `RandomForestClassifier` otimizado com GridSearchCV, que demonstrou um desempenho excelente e robusto.
 
 * **Acurácia Geral:** **96%**.
-* **Score ROC-AUC:** **0.97**, o que indica uma capacidade quase perfeita de discriminar entre clientes satisfeitos e insatisfeitos. Esta métrica valida a alta performance do modelo de forma independente do leve desbalanceamento de classes.
+* **Score ROC-AUC:** **0.99**, o que indica uma capacidade quase perfeita de discriminar entre clientes satisfeitos e insatisfeitos. Esta métrica valida a alta performance do modelo de forma independente do leve desbalanceamento de classes.
 
 ![Matriz de Confusão do Modelo Final](./docs/imagens/Visualizando_a_Matriz_de_Confusao_Final_(test.csv).png)
 ''

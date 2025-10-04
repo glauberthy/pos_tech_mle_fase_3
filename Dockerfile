@@ -1,7 +1,7 @@
 # 1. Use uma imagem base do Python
 FROM python:3.11-slim
 
-# Atualize pacotes do sistema para corrigir vulnerabilidades
+# 1. Pacotes do sistema para corrigir vulnerabilidades
 RUN apt-get update && apt-get upgrade -y && apt-get clean
 
 # 2. Defina o diretório de trabalho dentro do contêiner

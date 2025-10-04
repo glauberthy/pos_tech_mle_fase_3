@@ -45,7 +45,7 @@ O projeto foi desenhado com uma arquitetura desacoplada, separando a interface d
                                ┌───────────────┐
                                │               │
                                │Banco de Dados │
-                               │   (SQLite)    │
+                               │               │
                                │               │
                                └───────────────┘
 ```

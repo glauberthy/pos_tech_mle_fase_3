@@ -121,7 +121,7 @@ A análise de explicabilidade (XAI) revelou os principais drivers por trás das 
 * **Baixa Relevância:** Idade, atrasos no voo e localização do portão de embarque mostraram ter pouco impacto nas previsões do modelo.
 
 ---
- **Para uma análise técnica aprofundada** sobre a importância das variáveis, impacto com SHAP e dependência parcial, **[consulte o Relatório Completo de Explicabilidade (XAI) aqui](./ANALISE_DO_MODELO.md)**.
+ **Para uma análise técnica aprofundada** sobre a importância das variáveis, impacto com SHAP e dependência parcial, **[consulte o Relatório Completo de Explicabilidade (XAI) aqui](./docs/ANALISE_DO_MODELO.md)**.
 ---
 
 ## 🚀 Como Executar o Projeto Localmente

@@ -107,10 +107,10 @@ Uma companhia aérea busca transformar sua abordagem de reativa para proativa na
 O modelo final escolhido foi um `RandomForestClassifier` otimizado com GridSearchCV, que demonstrou um desempenho excelente e robusto.
 
 * **Acurácia Geral:** **96%**.
-* **Score ROC-AUC:** **0.99**, o que indica uma capacidade quase perfeita de discriminar entre clientes satisfeitos e insatisfeitos. Esta métrica valida a alta performance do modelo de forma independente do leve desbalanceamento de classes.
+* **Score ROC-AUC:** **0.97**, o que indica uma capacidade quase perfeita de discriminar entre clientes satisfeitos e insatisfeitos. Esta métrica valida a alta performance do modelo de forma independente do leve desbalanceamento de classes.
 
-![Matriz de Confusão do Modelo Final](URL_DA_SUA_IMAGEM_DA_MATRIZ_DE_CONFUSAO_AQUI)
-
+![Matriz de Confusão do Modelo Final](./docs/imagens/Visualizando_a_Matriz_de_Confusao_Final_(test.csv).png)
+''
 ### Principais Fatores de Satisfação (Insights de XAI)
 
 A análise de explicabilidade (XAI) revelou os principais drivers por trás das previsões do modelo:
@@ -130,8 +130,8 @@ A análise de explicabilidade (XAI) revelou os principais drivers por trás das 
 
 **1. Clone o Repositório**
 ```bash
-git clone <URL_DO_SEU_REPOSITORIO_AQUI>
-cd nome-do-repositorio
+git clone https://github.com/glauberthy/pos_tech_mle_fase_3
+cd pos_tech_mle_fase_3
 ```
 
 **2. Crie e Ative o Ambiente Virtual e Instale as Dependências**

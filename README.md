@@ -16,17 +16,15 @@ pinned: false
 
 ## 🚀 [Acesse a Demonstração Interativa Aqui!](https://huggingface.co/spaces/glauberthy/analise-satisfacao-passageiros)
 
-Este projeto é uma solução completa de Machine Learning, desenvolvida para o Tech Challenge da Pós-Graduação, que aborda o ciclo de vida de um produto de dados de ponta a ponta: desde a coleta e armazenamento de dados via API até o treino de um modelo preditivo e sua implantação numa aplicação interativa.
+Este projeto é uma solução completa de Machine Learning, desenvolvida para o Tech Challenge da Pós-Graduação, que aborda o ciclo de vida de um produto de dados de ponta a ponta: desde a coleta e armazenamento de dados via API até o treino de um modelo preditivo e sua implantação em uma aplicação interativa para o usuário final.
 
 ## 🎥 Apresentação em Vídeo do Projeto
 
-Assista ao vídeo de demonstração que preparamos para avaliação do **Tech Challenge da Pós Tech em Machine Learning Engineering**.  
-Clique na imagem abaixo para abrir no YouTube:
+Assista à apresentação completa do projeto, onde detalhamos o problema de negócio, a arquitetura da solução, a análise de dados e a demonstração da aplicação em funcionamento. Este vídeo cumpre o requisito de **storytelling e vídeo explicativo** do desafio.
 
-<a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">
-  <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Apresentação do Projeto - Tech Challenge Pós Tech MLE" width="400"/>
+<a href="URL_DO_SEU_VIDEO_NO_YOUTUBE_AQUI" target="_blank">
+  <img src="https://img.youtube.com/vi/URL_DO_SEU_VIDEO_NO_YOUTUBE_AQUI/hqdefault.jpg" alt="Apresentação do Projeto - Tech Challenge Pós Tech MLE" width="400"/>
 </a>
-
 
 
 ## 🏛️ Arquitetura da Solução
@@ -87,7 +85,7 @@ A estrutura de arquivos foi organizada para separar claramente as responsabilida
 
 ## 🎯 Problema de Negócio
 
-Uma companhia aérea deseja entender os principais fatores que influenciam a satisfação dos seus clientes para melhorar os seus serviços. Além de entender, a empresa quer uma ferramenta que possa prever a satisfação de um passageiro com base no seu perfil e nas características do voo, permitindo uma tomada de decisão proativa.
+Uma companhia aérea busca transformar sua abordagem de reativa para proativa na gestão da satisfação do cliente. O objetivo é parar de apenas analisar o passado e começar a **prever o futuro**, identificando os passageiros com alta probabilidade de insatisfação **antes** que ela ocorra. Para isso, é necessário não apenas um modelo preditivo acurado, mas também um entendimento claro de **quais fatores** mais impactam a experiência do cliente para guiar ações estratégicas e otimizar investimentos em serviços.
 
 ---
 
@@ -97,22 +95,33 @@ Uma companhia aérea deseja entender os principais fatores que influenciam a sat
 | --------------------- | ------------------------------------------------------------------------------------------------------- |
 | **Backend** | Python, FastAPI, Pydantic, Uvicorn                                                                      |
 | **Frontend** | Streamlit                                                                                               |
-| **Ciência de Dados** | Pandas, Scikit-learn, Matplotlib, Seaborn, XGBoost, Jupyter Notebook                                    |
+| **Ciência de Dados** | Pandas, Scikit-learn, Matplotlib, Seaborn, XGBoost, SHAP, Jupyter Notebook                                    |
 | **Banco de Dados** | SQLite                                                                                                  |
 | **Qualidade & Testes**| Pytest                                                                                                  |
 | **Deploy** | Docker, Hugging Face Spaces                                                                             |
 
 ---
 
-## 📊 Resultados do Modelo
+## 📊 Performance e Insights do Modelo
 
-O modelo final escolhido foi um `RandomForestClassifier`, que demonstrou um excelente equilíbrio entre performance e tempo de treino.
+O modelo final escolhido foi um `RandomForestClassifier` otimizado com GridSearchCV, que demonstrou um desempenho excelente e robusto.
 
-* **Acurácia Final:** **96%** (validada num conjunto de teste com mais de 25.000 amostras).
-* **Métricas Principais:** O modelo é particularmente eficaz em identificar corretamente tanto os clientes satisfeitos quanto os insatisfeitos, com F1-Scores de 0.96 e 0.97, respetivamente.
+* **Acurácia Geral:** **96%**.
+* **Score ROC-AUC:** **0.99**, o que indica uma capacidade quase perfeita de discriminar entre clientes satisfeitos e insatisfeitos. Esta métrica valida a alta performance do modelo de forma independente do leve desbalanceamento de classes.
 
-![Matriz de Confusão do Modelo Final](URL_PARA_A_IMAGEM_DA_MATRIZ_DE_CONFUSAO_AQUI)
+![Matriz de Confusão do Modelo Final](URL_DA_SUA_IMAGEM_DA_MATRIZ_DE_CONFUSAO_AQUI)
 
+### Principais Fatores de Satisfação (Insights de XAI)
+
+A análise de explicabilidade (XAI) revelou os principais drivers por trás das previsões do modelo:
+
+* **Experiência Digital Lidera:** `online_boarding` e `inflight_wifi_service` são os fatores de maior impacto na satisfação do cliente.
+* **Perfil do Passageiro é Decisivo:** O tipo de viagem (`Business Travel` vs. `Personal Travel`), a fidelidade do cliente (`Loyal Customer`) e a classe do voo são preditores-chave.
+* **Serviços a Bordo Têm Impacto Moderado:** Conforto do assento (`seat_comfort`) e entretenimento a bordo (`inflight_entertainment`) são importantes, mas com um peso menor que os fatores digitais e o perfil do passageiro.
+* **Baixa Relevância:** Idade, atrasos no voo e localização do portão de embarque mostraram ter pouco impacto nas previsões do modelo.
+
+---
+ **Para uma análise técnica aprofundada** sobre a importância das variáveis, impacto com SHAP e dependência parcial, **[consulte o Relatório Completo de Explicabilidade (XAI) aqui](./ANALISE_DO_MODELO.md)**.
 ---
 
 ## 🚀 Como Executar o Projeto Localmente
@@ -169,4 +178,4 @@ A aplicação abrirá no seu navegador em `http://127.0.0.1:8501`.
 
 * **Pipeline de Retreino:** Implementar um pipeline automatizado que retreine o modelo periodicamente com os novos dados coletados pela API.
 * **Monitoramento:** Criar um segundo dashboard para monitorizar a performance do modelo em produção e detetar "data drift".
-* **Otimização de Hiperparâmetros:** Utilizar técnicas como GridSearchCV ou RandomizedSearchCV para encontrar a combinação ótima de parâmetros para o modelo, o que poderia levar a um pequeno ganho de acurácia.
+* **Testes A/B:**  Implementar as recomendações de ação (ex: melhorias direcionadas ao Wi-Fi) e medir o impacto real na satisfação do cliente através de testes A/B para validar as hipóteses geradas pelo modelo.

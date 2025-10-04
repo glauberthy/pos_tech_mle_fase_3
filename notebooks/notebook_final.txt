@@ -1,0 +1,1477 @@
+## Construção do Modelo de Machine Learning
+
+Nesta segunda fase, iniciamos o coração do nosso projeto: a análise dos dados e a construção do modelo preditivo. O objetivo é transformar os dados brutos de pesquisa de satisfação em um modelo inteligente capaz de prever se um passageiro ficará satisfeito ou não.
+
+Todo o desenvolvimento desta fase será realizado em um ambiente interativo (Jupyter Notebook), que é ideal para análise, experimentação e visualização de dados.
+
+### Carregamento e Exploração Inicial dos Dados (EDA)
+
+O primeiro passo de qualquer projeto de Ciência de Dados é fazer um contato inicial com os dados. Precisamos "sentir" os dados, entender sua estrutura, seu tamanho, os tipos de informação que contêm e, crucialmente, identificar problemas preliminares como valores ausentes ou inconsistências.
+
+### O que Este Código Faz?
+
+1.  **Importação do Pandas:**
+    * Importamos a biblioteca `pandas`, que é a ferramenta padrão em Python para manipulação e análise de dados tabulares.
+
+2.  **Carregamento dos Dados (`.read_csv()`):**
+    * Carregamos o arquivo `train.csv` para um **DataFrame**, que é a estrutura de dados principal do Pandas, semelhante a uma planilha ou tabela de banco de dados.
+
+3.  **Inspeção da Estrutura (`.info()`):**
+    * O método `.info()` nos fornece um resumo técnico do DataFrame. Ele é essencial para verificarmos:
+        * O número total de registros (linhas) e colunas.
+        * O nome e o tipo de dado (`Dtype`) de cada coluna.
+        * A contagem de valores não-nulos, o que nos permite identificar rapidamente quais colunas têm dados faltantes.
+
+4.  **Amostra dos Dados (`.head()`):**
+    * Exibimos as cinco primeiras linhas do DataFrame para ter uma visão qualitativa dos dados e entender como as informações estão dispostas.
+
+5.  **Resumo Estatístico (`.describe()`):**
+    * Para todas as colunas numéricas, o método `.describe()` calcula estatísticas descritivas fundamentais, como média, desvio padrão, mediana (quartil 50%), mínimo e máximo. Isso nos ajuda a entender a escala e a distribuição de cada variável numérica.
+
+6.  **Contagem de Nulos (`.isnull().sum()`):**
+    * Este comando foca em um dos problemas mais comuns: dados ausentes. Ele conta, para cada coluna, quantos valores são nulos (`NaN`). Este é o primeiro passo para definirmos nossa estratégia de limpeza de dados.
+import pandas as pd
+
+# Carregar o arquivo train.csv para um DataFrame
+# O '.. ' indica para voltar um diretório (da pasta /notebooks para a raiz)
+df = pd.read_csv('../data/train.csv')
+
+# Exibir informações gerais sobre o DataFrame
+print("--- Informações Gerais (df.info()) ---")
+df.info()
+
+# Exibir as 5 primeiras linhas
+print("\n--- 5 Primeiras Linhas (df.head()) ---")
+print(df.head())
+
+# Exibir um resumo estatístico das colunas numéricas
+print("\n--- Resumo Estatístico (df.describe()) ---")
+print(df.describe())
+
+# Exibir a contagem de valores nulos por coluna
+print("\n--- Contagem de Valores Nulos (df.isnull().sum()) ---")
+print(df.isnull().sum())
+###  Análise Exploratória Visual (EDA) - Parte 1
+
+Após a inspeção inicial, o próximo passo é a **visualização de dados**. Gráficos nos permitem entender a distribuição das variáveis e o perfil dos passageiros de uma forma muito mais intuitiva do que tabelas de números.
+
+Nesta primeira parte da análise visual, focaremos na **análise univariada**, que significa analisar cada variável de forma independente para entender suas características individuais.
+
+### O que Este Código Faz?
+
+1.  **Configuração do Ambiente Visual:**
+    * Importamos as bibliotecas `matplotlib` e `seaborn`, que são as principais ferramentas para visualização de dados em Python.
+    * Definimos um tamanho de figura grande (`figsize`) e um estilo (`whitegrid`) para garantir que nossos gráficos sejam legíveis e esteticamente agradáveis.
+    * Usamos `plt.subplot()` para organizar múltiplos gráficos em uma única visualização, facilitando a comparação.
+
+2.  **Análise de Variáveis Numéricas:**
+    * **Histograma de Idade:** O histograma nos mostra a frequência de passageiros em diferentes faixas etárias. A linha `kde` (Kernel Density Estimate) suaviza o histograma para nos dar uma ideia da forma da distribuição.
+    * **Boxplot de Distância de Voo:** O boxplot é ideal para identificar a mediana (a linha central da caixa), os quartis (os limites da caixa) e os *outliers* (pontos individuais) de uma variável numérica. Ele nos dá um resumo rápido da dispersão dos dados.
+
+3.  **Análise de Variáveis Categóricas:**
+    * **Gráfico de Contagem por Classe:** O `countplot` é um gráfico de barras que exibe a contagem total de passageiros para cada categoria de uma variável (neste caso, `Business`, `Eco`, `Eco Plus`). Ordenamos as barras pela contagem para facilitar a leitura.
+    * **Gráfico de Contagem por Satisfação:** Este é um dos gráficos mais importantes, pois visualiza a nossa variável alvo. Ele nos mostra a proporção entre passageiros "satisfeitos" e "neutros ou insatisfeitos", nos ajudando a entender o balanceamento das classes que o nosso modelo precisará prever.
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Configurações para melhorar a visualização dos gráficos
+sns.set_style('whitegrid')
+plt.figure(figsize=(18, 12))
+
+# --- Bloco 1: Análise Univariada Numérica ---
+
+# Gráfico 1: Histograma da Idade (Age)
+plt.subplot(2, 2, 1) # Cria uma grade 2x2 e seleciona a 1ª posição
+sns.histplot(df['Age'], kde=True, bins=30)
+plt.title('Distribuição da Idade dos Passageiros', fontsize=16)
+plt.xlabel('Idade')
+plt.ylabel('Contagem')
+
+# Gráfico 2: Boxplot da Distância de Voo (Flight Distance)
+plt.subplot(2, 2, 2) # Seleciona a 2ª posição
+sns.boxplot(x=df['Flight Distance'])
+plt.title('Distribuição da Distância de Voo', fontsize=16)
+plt.xlabel('Distância de Voo')
+
+
+# --- Bloco 2: Análise Univariada Categórica ---
+
+# Gráfico 3: Contagem por Classe de Voo
+plt.subplot(2, 2, 3) # Seleciona a 3ª posição
+sns.countplot(x='Class', data=df, order=df['Class'].value_counts().index)
+plt.title('Contagem de Passageiros por Classe', fontsize=16)
+plt.xlabel('Classe')
+plt.ylabel('Contagem')
+
+# Gráfico 4: Contagem por Satisfação (Nossa Variável Alvo)
+plt.subplot(2, 2, 4) # Seleciona a 4ª posição
+sns.countplot(x='satisfaction', data=df)
+plt.title('Distribuição da Satisfação dos Passageiros', fontsize=16)
+plt.xlabel('Satisfação')
+plt.ylabel('Contagem')
+
+# Ajusta o layout para evitar sobreposição dos títulos
+plt.tight_layout()
+# Exibe os gráficos
+plt.show()
+### Análise Exploratória Visual (EDA) - Parte 2
+
+Após entendermos as variáveis de forma isolada, o próximo passo é a **análise bivariada e multivariada**. O objetivo aqui é começar a investigar as relações *entre* as variáveis, com um foco especial em como as características dos passageiros e dos voos se relacionam com a nossa variável alvo, a `satisfaction`.
+
+#### Análise Bivariada
+
+Nesta análise, cruzamos variáveis categóricas com a variável de satisfação para identificar visualmente quais grupos de passageiros tendem a estar mais ou menos satisfeitos.
+
+#### Análise de Correlação
+
+A análise de correlação nos ajuda a entender as relações lineares entre as variáveis **numéricas**. Um heatmap (mapa de calor) é a forma ideal de visualizar a matriz de correlação, onde cores quentes (vermelho) indicam uma correlação positiva forte e cores frias (azul) indicam uma correlação negativa forte.
+
+### O que Este Código Faz?
+
+1.  **Gráficos de Contagem Agrupados (`countplot` com `hue`):**
+    * Criamos três gráficos de barras para analisar a satisfação dentro de diferentes categorias: `Class`, `Customer Type` e `Type of Travel`.
+    * O parâmetro `hue='satisfaction'` é a chave aqui: ele divide cada barra (cada categoria) em duas cores, representando a contagem de passageiros satisfeitos e insatisfeitos dentro daquele grupo. Isso nos permite comparar visualmente a *proporção* de satisfação entre as categorias.
+
+2.  **Seleção de Colunas Numéricas (`.select_dtypes()`):**
+    * Para criar o heatmap de correlação, primeiro precisamos de um DataFrame contendo apenas as colunas numéricas. O método `.select_dtypes()` faz isso de forma automática e eficiente.
+    * Removemos as colunas `Unnamed: 0` e `id`, pois são apenas identificadores e não devem fazer parte de uma análise de correlação.
+
+3.  **Cálculo da Matriz de Correlação (`.corr()`):**
+    * O método `.corr()` do Pandas calcula o coeficiente de correlação de Pearson entre todas as colunas numéricas, resultando em uma matriz quadrada onde cada célula representa a correlação entre duas variáveis.
+
+4.  **Visualização com Heatmap (`sns.heatmap`):**
+    * Esta função do Seaborn transforma a matriz de correlação numérica em um mapa de calor colorido, facilitando a identificação visual de relações fortes. O parâmetro `cmap='coolwarm'` define uma paleta de cores intuitiva (vermelho-azul).
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# O DataFrame 'df' já deve estar carregado da célula anterior
+
+# Configurações para melhorar a visualização dos gráficos
+sns.set_style('whitegrid')
+
+# --- Bloco 1 e 2: Análise Bivariada vs. Satisfação ---
+
+plt.figure(figsize=(20, 8))
+
+# Gráfico 1: Satisfação por Classe
+plt.subplot(1, 3, 1)
+sns.countplot(x='Class', hue='satisfaction', data=df, order=['Business', 'Eco Plus', 'Eco'])
+plt.title('Satisfação por Classe de Voo', fontsize=14)
+plt.xlabel('Classe')
+plt.ylabel('Contagem')
+
+# Gráfico 2: Satisfação por Tipo de Cliente
+plt.subplot(1, 3, 2)
+sns.countplot(x='Customer Type', hue='satisfaction', data=df)
+plt.title('Satisfação por Tipo de Cliente', fontsize=14)
+plt.xlabel('Tipo de Cliente')
+plt.ylabel('Contagem')
+
+# Gráfico 3: Satisfação por Tipo de Viagem
+plt.subplot(1, 3, 3)
+sns.countplot(x='Type of Travel', hue='satisfaction', data=df)
+plt.title('Satisfação por Tipo de Viagem', fontsize=14)
+plt.xlabel('Tipo de Viagem')
+plt.ylabel('Contagem')
+
+plt.tight_layout()
+plt.show()
+
+
+# --- Bloco 3: Análise de Correlação ---
+
+plt.figure(figsize=(16, 12))
+
+# Selecionar apenas as colunas numéricas para a matriz de correlação
+numerical_df = df.select_dtypes(include=['int64', 'float64']).drop(['Unnamed: 0', 'id'], axis=1)
+
+# Calcular a matriz de correlação
+corr_matrix = numerical_df.corr()
+
+# Gerar o heatmap
+sns.heatmap(corr_matrix, annot=False, cmap='coolwarm')
+plt.title('Heatmap de Correlação entre Variáveis Numéricas', fontsize=16)
+plt.show()
+###  Pré-processamento dos Dados - Parte 1
+
+Com a análise exploratória concluída, iniciamos a fase de **pré-processamento**. O objetivo aqui é "limpar" e "organizar" nossos dados, transformando o DataFrame bruto em um conjunto de dados pronto para ser usado por um algoritmo de Machine Learning.
+
+Nesta primeira parte, focaremos em duas tarefas essenciais: tratar os valores ausentes que identificamos e selecionar apenas as features (variáveis) que serão úteis para o modelo.
+
+### O que Este Código Faz?
+
+1.  **Tratamento de Dados Faltantes (`.fillna()`):**
+    * Como identificado na análise inicial, a coluna `Arrival Delay in Minutes` possui 310 valores nulos.
+    * Escolhemos a estratégia de preencher esses valores ausentes com a **mediana** da coluna. A mediana é preferível à média em distribuições assimétricas (como tempo de atraso), pois é menos sensível a valores extremos (outliers), tornando-a uma estimativa mais robusta.
+    * Após o preenchimento, verificamos novamente a contagem de nulos para confirmar que o tratamento foi bem-sucedido.
+
+2.  **Seleção de Features (`.drop()`):**
+    * Removemos as colunas `Unnamed: 0` e `id` do nosso conjunto de dados. Essas colunas são apenas identificadores sequenciais ou de registro e não contêm nenhuma informação intrínseca sobre a satisfação do passageiro. Mantê-las poderia confundir o modelo ou levar a um overfitting.
+
+3.  **Separação entre Features (X) e Alvo (y):**
+    * Esta é uma etapa fundamental em qualquer problema de aprendizado supervisionado. Dividimos nosso DataFrame em duas novas variáveis:
+        * `X`: Contém todas as colunas que servirão como **entradas** (características) para o nosso modelo.
+        * `y`: Contém apenas a coluna que queremos que o nosso modelo aprenda a **prever** (o alvo), que no nosso caso é a `satisfaction`.
+# --- PADRONIZAR NOMES DAS COLUNAS ---
+print("--- Nomes das colunas originais ---")
+print(df.columns)
+
+# Lógica de limpeza aprimorada para tratar o caso especial da coluna 'Class'
+colunas_limpas = {}
+for col in df.columns:
+    if col == 'Class':
+        colunas_limpas[col] = 'class_'
+    else:
+        colunas_limpas[col] = col.replace(' ', '_').replace('/', '_').replace('-', '_').lower()
+
+df.rename(columns=colunas_limpas, inplace=True)
+
+print("\n--- Nomes das colunas padronizados ---")
+print(df.columns)
+# --------------------------------------------------
+
+# --- Bloco 1: Tratamento de Dados Faltantes ---
+
+# Vimos que a coluna 'Arrival Delay in Minutes' tem 310 valores nulos.
+# Uma estratégia robusta para preencher dados numéricos é usar a mediana,
+# pois ela não é afetada por valores extremos (outliers).
+median_arrival_delay = df['arrival_delay_in_minutes'].median()
+df['arrival_delay_in_minutes'].fillna(median_arrival_delay, inplace=True)
+
+# Vamos verificar se ainda existem valores nulos
+print("--- Verificação de Nulos Após o Tratamento ---")
+print(df.isnull().sum())
+print("\nValores nulos em 'Arrival Delay in Minutes' foram preenchidos com a mediana:", median_arrival_delay)
+
+
+# --- Bloco 2: Seleção de Features e Separação ---
+
+# Removemos as colunas 'Unnamed: 0' e 'id', pois são apenas identificadores
+# e não contêm informação útil para o modelo.
+df_model = df.drop(['unnamed:_0', 'id'], axis=1)
+
+# Agora, separamos o nosso conjunto de dados em:
+# X -> As 'features' (características) que usaremos para fazer a previsão.
+# y -> A variável 'alvo' (target) que queremos prever.
+
+X = df_model.drop('satisfaction', axis=1)
+y = df_model['satisfaction']
+
+# Exibe as primeiras linhas de X e y para confirmar a separação
+print("\n--- 5 Primeiras Linhas das Features (X) ---")
+print(X.head())
+
+print("\n--- 5 Primeiras Linhas do Alvo (y) ---")
+print(y.head())
+
+print(f"\nFormato de X: {X.shape}")
+print(f"Formato de y: {y.shape}")
+### Pré-processamento dos Dados - Parte 2 (Pipelines e Transformações)
+
+Esta é uma das etapas mais críticas do projeto. O objetivo aqui é converter nosso conjunto de dados limpo em um formato totalmente numérico, pronto para ser "entendido" pelo algoritmo de Machine Learning. Faremos isso de forma organizada e robusta, criando um **pipeline de pré-processamento**.
+
+Um pipeline garante que as mesmas transformações sejam aplicadas de forma consistente nos dados de treino, de teste e, futuramente, em novos dados que chegarem pela nossa API.
+
+### O que Este Código Faz?
+
+1.  **Identificação Automática das Features:**
+    * O código primeiro identifica automaticamente quais colunas são numéricas e quais são categóricas. Isso torna o pipeline mais robusto a futuras mudanças nos dados.
+
+2.  **Definição dos Transformadores:**
+    * **`StandardScaler` (para colunas numéricas):** Esta transformação padroniza a escala das features numéricas, fazendo com que tenham média 0 e desvio padrão 1. Isso é importante para muitos algoritmos (como Regressão Logística e SVMs) que são sensíveis à escala das variáveis de entrada.
+    * **`OneHotEncoder` (para colunas categóricas):** Converte variáveis categóricas (como `Class`) em um formato numérico. Para cada categoria, ele cria uma nova coluna binária (0 ou 1). `handle_unknown='ignore'` é uma configuração crucial para produção, que previne erros caso o modelo encontre uma categoria nos novos dados que não existia nos dados de treino.
+
+3.  **Construção do `ColumnTransformer`:**
+    * Esta é a peça central que organiza o pré-processamento. Ele funciona como um "gerente", aplicando o `StandardScaler` apenas às colunas numéricas e o `OneHotEncoder` apenas às colunas categóricas, tudo em um único passo.
+
+4.  **Divisão dos Dados em Treino e Teste (`train_test_split`):**
+    * Esta é uma das etapas mais importantes para uma avaliação honesta do modelo. Dividimos nossos dados em um conjunto de treino (usado para "ensinar" o modelo) e um conjunto de teste (usado para "avaliar" o modelo em dados que ele nunca viu).
+    * Usamos `stratify=y` para garantir que a proporção de passageiros satisfeitos e insatisfeitos seja a mesma tanto no conjunto de treino quanto no de teste, o que é importante para dados desbalanceados.
+
+5.  **Aplicação do Pré-processamento (`.fit_transform` vs `.transform`):**
+    * **`fit_transform` (nos dados de treino):** O `fit` "aprende" os parâmetros da transformação (ex: a média e o desvio padrão de cada coluna numérica) e o `transform` aplica essa transformação.
+    * **`transform` (nos dados de teste):** É crucial que usemos apenas `transform` nos dados de teste. Isso garante que estamos aplicando a mesma transformação que foi aprendida **apenas com os dados de treino**, prevenindo o "vazamento de dados" (data leakage) e garantindo uma avaliação realista do desempenho do modelo.
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.inspection import permutation_importance, PartialDependenceDisplay
+import shap
+
+# Identificar as colunas numéricas e categóricas
+# Faremos isso de forma programática para evitar erros manuais.
+numerical_features = X.select_dtypes(include=['int64', 'float64']).columns
+categorical_features = X.select_dtypes(include=['object']).columns
+
+# Criar os "transformadores" para cada tipo de coluna
+# - Para dados numéricos, vamos padronizar a escala (StandardScaler).
+# - Para dados categóricos, vamos aplicar o One-Hot Encoding.
+numerical_transformer = StandardScaler()
+categorical_transformer = OneHotEncoder(handle_unknown='ignore')
+
+# Usar o 'ColumnTransformer' para aplicar as transformações corretas a cada tipo de coluna.
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', numerical_transformer, numerical_features),
+        ('cat', categorical_transformer, categorical_features)
+    ],
+    remainder='passthrough' # Mantém colunas não especificadas (se houver)
+)
+
+
+# Dividir os dados em conjuntos de treino e teste ANTES de aplicar o pré-processamento.
+# Isso é crucial para evitar "vazamento de dados" (data leakage).
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+
+# Aplicar o pré-processamento aos dados
+# Usamos .fit_transform nos dados de treino para "aprender" a transformação
+# e .transform nos dados de teste para aplicar a mesma transformação aprendida.
+X_train_processed = preprocessor.fit_transform(X_train)
+X_test_processed = preprocessor.transform(X_test)
+
+
+# Exibir os resultados para verificação
+print("--- Pipeline de Pré-processamento Criado ---")
+print(f"Colunas numéricas identificadas: {list(numerical_features)}")
+print(f"Colunas categóricas identificadas: {list(categorical_features)}")
+print("\n--- Divisão dos Dados ---")
+print(f"Formato de X_train: {X_train.shape}")
+print(f"Formato de X_test: {X_test.shape}")
+print("\n--- Dados Processados ---")
+print(f"Formato de X_train_processed: {X_train_processed.shape}")
+print(f"Formato de X_test_processed: {X_test_processed.shape}")
+print("\nPré-processamento concluído com sucesso!")
+### Treinamento do Modelo
+
+Com os dados devidamente preparados e divididos, chegamos à etapa central da modelagem: o treinamento. Nesta fase, vamos "alimentar" um algoritmo de Machine Learning com os dados de treino para que ele aprenda os padrões que correlacionam as características de um voo e de um passageiro com a sua satisfação final.
+
+Para garantir que o processo seja robusto e reprodutível, vamos encapsular todas as etapas de pré-processamento e a modelagem em um único objeto `Pipeline` do Scikit-learn.
+
+### O que Este Código Faz?
+
+1.  **Escolha do Algoritmo (`RandomForestClassifier`):**
+    * Selecionamos o `RandomForestClassifier`, um modelo do tipo "ensemble" (conjunto). Ele funciona construindo múltiplas árvores de decisão durante o treinamento e a classe que for mais votada entre as árvores será a predição final.
+    * Essa abordagem o torna muito robusto e, geralmente, oferece alta performance sem a necessidade de muito ajuste de hiperparâmetros.
+    * Definimos `n_jobs=-1` para utilizar todos os núcleos de processamento disponíveis, acelerando significativamente o treinamento.
+
+2.  **Criação do Pipeline Completo (`Pipeline`):**
+    * O `Pipeline` é uma das ferramentas mais poderosas do Scikit-learn para produção. Ele encadeia múltiplas etapas de processamento.
+    * Nosso pipeline tem dois estágios: primeiro, ele aplica todas as transformações definidas no nosso `preprocessor` (StandardScaler em colunas numéricas e OneHotEncoder em colunas categóricas); em seguida, ele passa os dados já processados para o modelo `RandomForestClassifier` (`classifier`).
+    * A grande vantagem é que, ao usarmos o pipeline para fazer previsões em novos dados, garantimos que exatamente as mesmas transformações aprendidas nos dados de treino serão aplicadas, evitando erros e inconsistências.
+
+3.  **Treinamento do Modelo (`.fit()`):**
+    * O comando `full_pipeline.fit(X_train, y_train)` inicia o processo de treinamento.
+    * Passamos os dados de treino **brutos** (`X_train`) para o pipeline. Internamente, o pipeline primeiro chama o método `fit_transform` do `preprocessor` nos dados e, na sequência, usa os dados transformados para treinar o modelo final.
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import Pipeline
+
+# As variáveis 'preprocessor', 'X_train', e 'y_train' já devem estar
+# definidas das células anteriores.
+
+# Escolha do Algoritmo
+# Vamos usar o RandomForestClassifier. O 'random_state=42' garante que o resultado seja o mesmo toda vez que rodarmos (reprodutibilidade).
+# 'n_jobs=-1' usa todos os processadores disponíveis para acelerar o treino.
+model = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+
+
+# Criação do Pipeline Completo
+# Este pipeline irá primeiro executar todas as etapas do nosso 'preprocessor'
+# (StandardScaler para números, OneHotEncoder para categorias) e, em seguida,
+# passar os dados processados para o treinamento do modelo RandomForest.
+full_pipeline = Pipeline(steps=[('preprocessor', preprocessor),('classifier', model)])
+
+
+# Treinamento do Modelo
+# Agora, treinamos o pipeline inteiro com nossos dados de treino brutos (X_train).
+# O pipeline cuida de aplicar o pré-processamento internamente antes do treino.
+# Este processo pode levar alguns minutos.
+print("--- Iniciando o Treinamento do Modelo ---")
+
+full_pipeline.fit(X_train, y_train)
+
+print("\n--- Treinamento Concluído com Sucesso! ---")
+print("\nNosso pipeline completo está treinado e pronto para fazer previsões.")
+### Métricas de Avaliação para Classificação
+
+Para avaliar a performance do nosso modelo de forma justa e completa, é fundamental entender as métricas de classificação que serão utilizadas. Um bom modelo não é apenas aquele com alta acurácia, mas aquele cujo desempenho é robusto sob diferentes perspectivas.
+
+#### Matriz de Confusão
+A Matriz de Confusão é a base para a maioria das outras métricas. Ela nos dá uma visão detalhada dos acertos e erros do modelo, divididos em quatro categorias:
+* **Verdadeiros Positivos (TP):** Passageiros satisfeitos que o modelo previu corretamente como satisfeitos.
+* **Verdadeiros Negativos (TN):** Passageiros insatisfeitos que o modelo previu corretamente como insatisfeitos.
+* **Falsos Positivos (FP):** Passageiros insatisfeitos que o modelo previu incorretamente como satisfeitos (Erro Tipo I).
+* **Falsos Negativos (FN):** Passageiros satisfeitos que o modelo previu incorretamente como insatisfeitos (Erro Tipo II).
+
+#### Acurácia (Accuracy)
+É a métrica mais intuitiva. Representa a proporção de previsões corretas sobre o total de previsões.
+* **Fórmula:** `(TP + TN) / (TP + TN + FP + FN)`
+* **Quando usar:** É uma boa medida geral, mas pode ser enganosa em datasets com classes desbalanceadas, como o nosso (57% insatisfeitos vs. 43% satisfeitos).
+
+#### Precisão (Precision)
+Mede a proporção de Verdadeiros Positivos em relação a tudo que o modelo previu como positivo.
+* **Fórmula:** `TP / (TP + FP)`
+* **Interpretação:** Das vezes que o modelo disse que um passageiro estava "satisfeito", quantas vezes ele acertou? Uma alta precisão minimiza os Falsos Positivos.
+
+#### Recall (Revocação ou Sensibilidade)
+Mede a proporção de Verdadeiros Positivos em relação a todos os exemplos que eram realmente positivos.
+* **Fórmula:** `TP / (TP + FN)`
+* **Interpretação:** De todos os passageiros que estavam de fato "satisfeitos", quantos o nosso modelo conseguiu identificar? Um alto recall minimiza os Falsos Negativos.
+
+#### F1-Score
+É a média harmônica entre Precisão e Recall. É uma métrica excelente para problemas com classes desbalanceadas, pois busca um bom equilíbrio entre os dois. Um F1-Score alto indica que o modelo tem tanto uma boa precisão quanto um bom recall.
+* **Fórmula:** `2 * (Precisão * Recall) / (Precisão + Recall)`
+
+#### Curva ROC e AUC
+* **Curva ROC:** É um gráfico que mostra a performance do modelo em todos os limiares de classificação, plotando a Taxa de Verdadeiros Positivos (Recall) contra a Taxa de Falsos Positivos.
+* **AUC (Area Under the Curve):** Mede a área total sob a curva ROC. Um valor de 1.0 representa um modelo perfeito, enquanto 0.5 representa um modelo que não é melhor que uma adivinhação aleatória. A AUC é particularmente útil por ser uma medida agregada que não depende de um ponto de corte específico e é robusta a desbalanceamentos de classe.
+### Avaliação de Performance do Modelo
+
+Após o treinamento, chegamos à etapa crucial de **avaliação**. O objetivo aqui é medir, de forma quantitativa e honesta, o quão bom nosso modelo é em fazer previsões em dados que ele nunca viu antes. Para isso, utilizamos o conjunto de teste (`X_test` e `y_test`) que separamos anteriormente.
+
+Usaremos duas ferramentas padrão para avaliar modelos de classificação:
+
+1.  **Relatório de Classificação:** Uma tabela que resume as principais métricas de performance (Precisão, Recall, F1-Score).
+2.  **Matriz de Confusão:** Uma visualização que nos mostra exatamente onde o modelo está acertando e onde está errando.
+
+### O que Este Código Faz?
+
+1.  **Fazer Previsões (`.predict()`):**
+    * A primeira etapa é usar o `full_pipeline` já treinado para gerar as previsões para o conjunto de teste (`X_test`).
+    * O pipeline aplica internamente as mesmas etapas de pré-processamento nos dados de teste antes de passá-los para o modelo, garantindo consistência. O resultado (`y_pred`) é uma lista com as previsões de satisfação para cada passageiro de teste.
+
+2.  **Gerar o Relatório de Classificação (`classification_report`):**
+    * Esta função compara as previsões do modelo (`y_pred`) com os valores reais (`y_test`) e calcula as métricas essenciais:
+    * **`Precision (Precisão)`:** Mede a exatidão das previsões positivas. Das vezes que o modelo previu uma classe, quantas ele acertou?
+    * **`Recall (Revocação)`:** Mede a completude das previsões. De todos os exemplos de uma classe, quantos o modelo conseguiu encontrar?
+    * **`F1-Score`:** É a média harmônica entre Precisão e Recall, fornecendo uma única métrica que equilibra ambas. É especialmente útil quando as classes são desbalanceadas.
+    * **`Accuracy (Acurácia)`:** A métrica mais simples, representa a porcentagem total de acertos do modelo.
+
+3.  **Gerar e Visualizar a Matriz de Confusão (`ConfusionMatrixDisplay`):**
+    * A matriz de confusão é a melhor ferramenta para visualizar os tipos de erros. Ela é uma tabela que cruza os valores Reais com os valores Previstos.
+    * A **diagonal principal** (do canto superior esquerdo ao inferior direito) mostra o total de **acertos** para cada classe.
+    * Os valores **fora da diagonal principal** mostram os **erros**, nos permitindo ver, por exemplo, quantos passageiros "satisfeitos" foram incorretamente classificados como "insatisfeitos" (Falsos Negativos) e vice-versa (Falsos Positivos).
+from sklearn.metrics import classification_report, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+
+# Fazer Previsões no Conjunto de Teste
+#  Usamos o pipeline treinado para prever a satisfação nos dados de teste.
+print("--- Realizando previsões no conjunto de teste... ---")
+y_pred = full_pipeline.predict(X_test)
+
+
+# Gerar o Relatório de Classificação
+# Este relatório nos dá as principais métricas: precisão, recall, f1-score e acurácia.
+print("\n--- Relatório de Classificação ---")
+print(classification_report(y_test, y_pred))
+
+
+#Gerar e Visualizar a Matriz de Confusão
+#A matriz de confusão nos mostra visualmente onde o modelo está acertando e errando.
+print("\n--- Visualizando a Matriz de Confusão ---")
+fig, ax = plt.subplots(figsize=(8, 6))
+ConfusionMatrixDisplay.from_predictions(y_test, y_pred, ax=ax, cmap='Blues')
+plt.title('Matriz de Confusão')
+plt.show()
+### Validação Final com Dados de Teste Dedicados
+
+Chegamos à prova de fogo do nosso modelo. Além da divisão treino-teste que fizemos com o arquivo `train.csv`, o dataset original nos forneceu um arquivo completamente separado para testes (`test.csv`). Esta é a melhor prática em projetos de Machine Learning, pois nos permite fazer uma avaliação final em um conjunto de dados que o modelo nunca viu em nenhuma etapa de seu desenvolvimento.
+
+O objetivo aqui é verificar a capacidade de **generalização** do modelo: ele consegue manter seu bom desempenho em dados completamente novos e desconhecidos? Um resultado consistente nesta etapa nos dá alta confiança de que o modelo se comportará bem no mundo real.
+
+### O que Este Código Faz?
+
+1.  **Carregamento dos Dados de Teste:**
+    * Primeiramente, carregamos o arquivo `test.csv` em um novo DataFrame.
+
+2.  **Aplicação do Pré-processamento Consistente:**
+    * É **absolutamente crucial** que os dados de teste passem exatamente pelo mesmo pré-processamento que os dados de treino.
+    * **Tratamento de Nulos:** Preenchemos os valores ausentes na coluna `Arrival Delay in Minutes`. É fundamental que usemos a **mesma mediana** que foi calculada a partir do conjunto de treino original (`train.csv`), para não "vazar" nenhuma informação do conjunto de teste para o nosso processo.
+    * **Separação:** Assim como antes, separamos o DataFrame em features (`X_final_test`) e o alvo (`y_final_test`).
+
+3.  **Previsão nos Novos Dados:**
+    * Utilizamos o nosso `full_pipeline` já treinado para fazer as previsões no novo conjunto de teste.
+    * É importante notar que aqui usamos apenas o método `.predict()`. Não há nenhum retreinamento ou reajuste (`.fit()`). O modelo está sendo testado exatamente como ele foi treinado.
+
+4.  **Avaliação Final:**
+    * Por fim, geramos o `classification_report` e a `ConfusionMatrixDisplay` comparando as previsões (`y_final_pred`) com os valores reais (`y_final_test`). Comparamos essas métricas finais com as obtidas na avaliação anterior para confirmar a estabilidade e a robustez do nosso modelo.
+import pandas as pd
+from sklearn.metrics import classification_report, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+# Carregar o novo arquivo de teste
+print("--- Carregando o arquivo de teste final: test.csv ---")
+df_final_test = pd.read_csv('../data/test.csv')
+
+# --- Aplicar o mesmo pré-processamento ---
+df_final_test.rename(columns=colunas_limpas, inplace=True)
+# Tratar valores nulos (usando a mesma mediana calculada com os dados de treino)
+# usando a mesma mediana para consistência.
+
+df_final_test.loc[:, 'arrival_delay_in_minutes'] = df_final_test['arrival_delay_in_minutes'].fillna(median_arrival_delay)
+
+# Separar as features (X) e o alvo (y)
+X_final_test = df_final_test.drop('satisfaction', axis=1)
+y_final_test = df_final_test['satisfaction']
+
+
+# Usar o NOSSO PIPELINE JÁ TREINADO para prever no novo conjunto de teste.
+print("\n--- Realizando previsões no conjunto de teste final ---")
+y_final_pred = full_pipeline.predict(X_final_test)
+
+
+# Gerar o Relatório de Classificação final
+print("\n--- Relatório de Classificação Final (test.csv) ---")
+print(classification_report(y_final_test, y_final_pred))
+
+
+# Gerar a Matriz de Confusão final
+print("\n--- Visualizando a Matriz de Confusão Final (test.csv) ---")
+fig, ax = plt.subplots(figsize=(8, 6))
+ConfusionMatrixDisplay.from_predictions(y_final_test, y_final_pred, ax=ax, cmap='Blues')
+plt.title('Matriz de Confusão Final (test.csv)')
+plt.show()
+### Refinamento e Validação com XGBoost
+
+Como parte do nosso dia de refinamento, decidimos testar um segundo algoritmo, o **XGBoost (Extreme Gradient Boosting)**, para comparar sua performance com a do nosso modelo `RandomForestClassifier`. O objetivo é validar se o nosso modelo inicial já é suficientemente bom ou se um algoritmo diferente poderia trazer ganhos significativos de performance.
+
+O XGBoost é um dos algoritmos mais poderosos e populares para dados tabulares, frequentemente vencendo competições de Machine Learning. Ele constrói árvores de decisão de forma sequencial, onde cada nova árvore foca em corrigir os erros das anteriores.
+
+### O que Este Código Faz?
+
+1.  **Codificação da Variável Alvo (`LabelEncoder`):**
+    * Um pré-requisito da biblioteca `xgboost` é que a variável alvo (`y`) seja numérica.
+    * Utilizamos o `LabelEncoder` do Scikit-learn para transformar as nossas etiquetas de texto ('neutral or dissatisfied', 'satisfied') em valores numéricos (0, 1).
+    * É crucial aplicar o `.fit_transform()` nos dados de treino para aprender e aplicar a transformação, e apenas `.transform()` nos dados de teste para usar a mesma codificação já aprendida, evitando vazamento de dados.
+
+2.  **Criação do Pipeline XGBoost:**
+    * Assim como fizemos com o RandomForest, criamos um `Pipeline` completo que primeiro aplica nosso `preprocessor` aos dados brutos e, em seguida, passa os dados processados para o `XGBClassifier`.
+
+3.  **Treinamento do Modelo:**
+    * Treinamos o pipeline do XGBoost usando os dados de treino (`X_train`) e a nossa variável alvo já codificada (`y_train_encoded`).
+
+4.  **Avaliação e Comparação:**
+    * Por fim, geramos um novo `classification_report` usando o modelo treinado para fazer previsões no conjunto de teste final.
+    * Ao comparar a acurácia e o F1-score deste relatório com os resultados do RandomForest, podemos tomar uma decisão informada sobre qual modelo é o melhor para o nosso problema.
+    * Adicionamos o parâmetro `target_names` ao relatório para que ele exiba os nomes originais das classes, tornando a interpretação mais fácil.
+from xgboost import XGBClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import classification_report
+from sklearn.preprocessing import LabelEncoder 
+label_encoder = LabelEncoder()
+
+# Aprende a codificação e a aplica nos dados de treino
+y_train_encoded = label_encoder.fit_transform(y_train)
+
+# Apenas aplica a mesma codificação nos dados de teste
+y_final_test_encoded = label_encoder.transform(y_final_test)
+# --------------------------------------------------
+
+xgb_model = XGBClassifier(n_estimators=100, random_state=42, n_jobs=-1,eval_metric='logloss')
+
+#Criação do Pipeline Completo para o XGBoost
+xgb_pipeline = Pipeline(steps=[('preprocessor', preprocessor),('classifier', xgb_model)])
+
+#Treinamento do Modelo XGBoost (usando o y_train_encoded)
+print("--- Iniciando o Treinamento do Modelo XGBoost ---")
+xgb_pipeline.fit(X_train, y_train_encoded) 
+print("\n--- Treinamento do XGBoost Concluído com Sucesso! ---")
+
+#Avaliação do Modelo XGBoost no conjunto de teste final (test.csv)
+print("\n--- Realizando previsões com XGBoost no conjunto de teste final ---")
+y_pred_xgb = xgb_pipeline.predict(X_final_test)
+
+# Gerar o Relatório de Classificação final para o XGBoost
+#    (comparando o y real codificado com as previsões)
+print("\n--- Relatório de Classificação Final (XGBoost) ---")
+print(classification_report(y_final_test_encoded, y_pred_xgb, target_names=label_encoder.classes_)) 
+### Otimização de Hiperparâmetros com GridSearchCV
+
+**Análise:** Nossos modelos (Random Forest e XGBoost) já apresentaram uma performance fantástica "de fábrica". No entanto, uma etapa final de validação é o **ajuste de hiperparâmetros**. O objetivo não é necessariamente buscar um grande aumento na performance (que já é alta), mas sim garantir que estamos usando uma configuração otimizada do modelo e validar sua estabilidade.
+
+Vamos usar o `GridSearchCV`, uma ferramenta que testa exaustivamente diferentes combinações de parâmetros de um modelo para encontrar a melhor. Faremos isso para o `RandomForestClassifier`, que teve um desempenho idêntico ao XGBoost e é um pouco mais rápido para este teste.
+
+**O que este código faz?**
+
+1.  **Define um `Pipeline`:** Criamos um pipeline que inclui o pré-processador e o modelo RandomForest. Isso garante que a validação cruzada do GridSearchCV aplique o pré-processamento corretamente a cada "fold" (divisão dos dados).
+2.  **Define a Grade de Parâmetros:** Criamos um dicionário `param_grid` com uma pequena seleção de hiperparâmetros para testar. Escolhemos apenas os mais impactantes: `n_estimators` (número de árvores) e `max_depth` (profundidade máxima de cada árvore).
+3.  **Executa a Busca:** O `GridSearchCV` treinará o modelo múltiplas vezes (validação cruzada) para cada combinação de parâmetros, usando o `f1-score` como métrica principal para decidir qual é a melhor.
+4.  **Exibe os Resultados:** Ao final, o código mostra a melhor combinação de parâmetros encontrada e o score de validação correspondente.
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import Pipeline
+
+# 1. Definir o pipeline que será usado no GridSearchCV
+#    (É o mesmo que usamos para treinar, mas com um modelo base)
+pipeline_rf = Pipeline(steps=[
+    ('preprocessor', preprocessor),
+    ('classifier', RandomForestClassifier(random_state=42, n_jobs=-1))
+])
+
+# 2. Definir a grade de parâmetros que queremos testar (uma grade pequena devido ao tempo)
+#    'classifier__' é o prefixo padrão do pipeline para acessar os parâmetros do modelo.
+
+param_grid = {
+    'classifier__n_estimators': [100, 200],
+    'classifier__max_depth': [10, 20, None]
+}
+# --- Otimização Concluída ---
+# Melhores parâmetros encontrados: {'classifier__max_depth': None, 'classifier__n_estimators': 100}
+# Melhor F1-score (validação cruzada): 0.9618
+
+# param_grid_media = {
+#     'classifier__n_estimators': [100, 200, 300], # 3 opções
+#     'classifier__max_depth': [10, 20, 30, None], # 4 opções
+#     'classifier__min_samples_split': [2, 5]     # 2 opções
+# }
+# --- Otimização Concluída ---
+# Melhores parâmetros encontrados: {'classifier__max_depth': 30, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 200}
+# Melhor F1-score (validação cruzada): 0.9619
+
+
+# param_grid_grande = {
+#     'classifier__n_estimators': [100, 200, 300, 400], # 4 opções
+#     'classifier__max_depth': [10, 20, 30, 40, None],  # 5 opções
+#     'classifier__min_samples_split': [2, 5, 10],      # 3 opções
+#     'classifier__min_samples_leaf': [1, 2, 4]         # 3 opções
+# }
+
+# --- Otimização Concluída ---
+# Melhores parâmetros encontrados: {'classifier__max_depth': 30, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 400}
+# Melhor F1-score (validação cruzada): 0.9620
+
+
+
+# 3. Configurar e executar o GridSearchCV
+#    cv=3 significa que ele fará uma validação cruzada de 3 folds (mais rápido).
+#    scoring='f1_weighted' é uma boa métrica para problemas de classificação.
+
+print("--- Iniciando a Otimização de Hiperparâmetros (GridSearchCV) ---")
+grid_search = GridSearchCV(pipeline_rf, param_grid, cv=3, scoring='f1_weighted', verbose=1, n_jobs=-1)
+grid_search.fit(X_train, y_train)
+
+# 4. Exibir os melhores parâmetros e o melhor score
+print("\n--- Otimização Concluída ---")
+print(f"Melhores parâmetros encontrados: {grid_search.best_params_}")
+print(f"Melhor F1-score (validação cruzada): {grid_search.best_score_:.4f}")
+# O objeto 'grid_search.best_estimator_' agora é o nosso pipeline final otimizado!
+modelo_final_otimizado = grid_search.best_estimator_
+### Análise de Importância das Features
+
+**Análise:** Um modelo com alta acurácia é ótimo, mas entender *por que* ele toma suas decisões é ainda melhor. A análise de importância das features nos mostra quais características dos passageiros e do voo o modelo considerou mais relevantes para prever a satisfação. Isso nos dá insights valiosos sobre o negócio e aumenta a confiança no modelo.
+
+**O que este código faz?**
+
+1.  **Extrai o Modelo Treinado:** Acessamos o estimador final (`RandomForestClassifier`) de dentro do nosso pipeline otimizado.
+2.  **Obtém os Nomes das Features:** Extraímos os nomes de todas as features (numéricas e categóricas já transformadas pelo OneHotEncoder) de dentro do passo de pré-processamento.
+3.  **Cria um DataFrame de Importância:** Combinamos os nomes das features com seus respectivos scores de importância calculados pelo modelo.
+4.  **Visualiza o Resultado:** Plotamos um gráfico de barras com as 15 features mais importantes, nos permitindo ver rapidamente o que mais impacta a satisfação do cliente.
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 1. Extrair o modelo RandomForest treinado do pipeline otimizado
+modelo_rf_final = modelo_final_otimizado.named_steps['classifier']
+
+# 2. Extrair os nomes das features do pré-processador
+num_features = list(numerical_features)
+cat_features = list(modelo_final_otimizado.named_steps['preprocessor']
+                    .named_transformers_['cat']
+                    .get_feature_names_out(categorical_features))
+
+# Combinar todos os nomes de features
+all_features = num_features + cat_features
+
+# 3. Criar um DataFrame com as features e suas importâncias
+feature_importance = pd.DataFrame({
+    'feature': all_features,
+    'importance': modelo_rf_final.feature_importances_
+}).sort_values('importance', ascending=False)
+
+# 4. Visualizar as 15 features mais importantes
+plt.figure(figsize=(12, 8))
+sns.barplot(x='importance', y='feature', data=feature_importance.head(15), palette='viridis', hue='feature', legend=False)
+plt.title('Top 15 Features Mais Importantes para o Modelo', fontsize=16)
+plt.xlabel('Importância')
+plt.ylabel('Feature')
+plt.tight_layout()
+plt.show()
+### Análise de Generalização com Curva de Aprendizagem
+
+**Análise:** A Curva de Aprendizagem (Learning Curve) plota a performance do modelo no conjunto de treino e no conjunto de validação (através de validação cruzada) em função do número de amostras de treinamento. A análise deste gráfico nos permite fazer um diagnóstico visual preciso sobre a capacidade de generalização do nosso modelo.
+
+  * **Se as curvas de treino e validação convergem para um score alto e ficam próximas**, temos um modelo robusto e bem ajustado (bom "fit").
+  * **Se a curva de treino atinge um score muito alto, mas a de validação estabiliza em um nível bem mais baixo (com um grande "gap" entre elas)**, é um sinal clássico de overfitting (alta variância).
+  * **Se ambas as curvas convergem para um score baixo**, é um sinal de underfitting (alto viés).
+
+**O que este código faz?**
+
+1.  **Importa as Funções:** Importamos `learning_curve` do Scikit-learn e o `numpy` para nos ajudar.
+2.  **Executa a Função `learning_curve`:**
+      * Passamos nosso pipeline final otimizado (`modelo_final_otimizado`) como o estimador.
+      * Utilizamos os dados de treino completos (`X_train`, `y_train`). A função se encarregará de treinar o modelo em subconjuntos de tamanhos crescentes.
+      * Definimos `cv=5` para uma validação cruzada robusta e `scoring='f1_weighted'` para usar a mesma métrica da nossa otimização.
+3.  **Calcula as Médias e Desvios:** A função retorna os scores para cada "fold" da validação cruzada. Calculamos a média e o desvio padrão desses scores para ter uma visão consolidada.
+4.  **Plota o Gráfico:**
+      * Plotamos a linha do score médio de treino e a linha do score médio de validação.
+      * Adicionamos uma área sombreada (usando `fill_between`) em volta de cada linha para representar o desvio padrão, nos dando uma ideia da variância dos resultados.
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import learning_curve, StratifiedShuffleSplit
+
+# O objeto 'modelo_final_otimizado' já contém o melhor pipeline treinado
+# X_train e y_train são nossos dados de treino completos
+
+print("--- Gerando a Curva de Aprendizagem (pode levar alguns minutos) ---")
+
+# Definir os tamanhos dos subconjuntos de treino para testar
+train_sizes_abs, train_scores, test_scores = learning_curve(
+    estimator=modelo_final_otimizado,
+    X=X_train,
+    y=y_train,
+    cv=5, # Validação cruzada com 5 folds
+    n_jobs=-1,
+    scoring='f1_weighted',
+    train_sizes=np.linspace(0.1, 1.0, 5) # Testar com 10%, 32.5%, 55%, 77.5% e 100% dos dados
+)
+
+# Calcular a média e o desvio padrão dos scores
+train_scores_mean = np.mean(train_scores, axis=1)
+train_scores_std = np.std(train_scores, axis=1)
+test_scores_mean = np.mean(test_scores, axis=1)
+test_scores_std = np.std(test_scores, axis=1)
+
+# Plotar a curva de aprendizado
+plt.figure(figsize=(10, 6))
+plt.grid()
+
+plt.title("Curva de Aprendizagem (RandomForest Otimizado)", fontsize=16)
+plt.xlabel("Número de Amostras de Treino")
+plt.ylabel("Score (F1 Ponderado)")
+
+# Plotar a área de desvio padrão do treino
+plt.fill_between(train_sizes_abs, train_scores_mean - train_scores_std,
+                 train_scores_mean + train_scores_std, alpha=0.1, color="r")
+# Plotar a área de desvio padrão do teste (validação)
+plt.fill_between(train_sizes_abs, test_scores_mean - test_scores_std,
+                 test_scores_mean + test_scores_std, alpha=0.1, color="g")
+
+# Plotar as linhas de score médio
+plt.plot(train_sizes_abs, train_scores_mean, 'o-', color="r", label="Score de Treino")
+plt.plot(train_sizes_abs, test_scores_mean, 'o-', color="g", label="Score de Validação Cruzada")
+
+plt.legend(loc="best")
+plt.show()
+### Validação Final com Curva ROC e Score AUC
+
+**Análise:** Como etapa final de validação, vamos calcular o score **AUC (Area Under the Curve)** e visualizar a **Curva ROC (Receiver Operating Characteristic)**. Conforme discutimos, esta é uma das métricas mais robustas para modelos de classificação, pois avalia a capacidade do modelo de discriminar entre as classes ("satisfeito" e "insatisfeito") em todos os os limiares de decisão possíveis.
+
+Um score AUC próximo de 1.0 e uma curva ROC que se aproxima rapidamente do canto superior esquerdo do gráfico são indicativos de um modelo com excelente poder preditivo.
+
+**O que este código faz?**
+
+1.  **Codifica os Rótulos Reais:** A função `roc_auc_score` precisa que os rótulos de teste (`y_final_test`) estejam em formato numérico (0 e 1). Usamos o `label_encoder` que já havíamos treinado para garantir a consistência.
+2.  **Obtém as Probabilidades:** Em vez de apenas prever a classe final, usamos o método `.predict_proba()` para obter a probabilidade de cada passageiro pertencer a cada classe. A Curva ROC é construída com base nessas probabilidades.
+3.  **Calcula o Score AUC:** Comparamos os rótulos reais codificados com as probabilidades previstas para a classe "positiva" ('satisfied') para obter o score AUC final.
+4.  **Plota a Curva ROC:** Usamos a função `roc_curve` para obter os pontos da curva (Taxa de Verdadeiros Positivos vs. Taxa de Falsos Positivos) e os plotamos com `matplotlib` para uma análise visual. Incluímos uma linha diagonal que representa um classificador aleatório (AUC = 0.5) como referência.
+
+from sklearn.metrics import roc_curve, roc_auc_score
+import matplotlib.pyplot as plt
+
+# O pipeline 'modelo_final_otimizado' e os dados X_final_test, y_final_test já estão prontos.
+# O 'label_encoder' também já foi treinado.
+
+# 1. Codificar os rótulos do conjunto de teste final para o formato numérico (0, 1)
+y_final_test_encoded = label_encoder.transform(y_final_test)
+
+# 2. Obter as probabilidades de previsão para a classe positiva ('satisfied')
+#    O predict_proba retorna uma array com [prob_classe_0, prob_classe_1] para cada amostra.
+#    Queremos a probabilidade da classe 1.
+y_pred_probs = modelo_final_otimizado.predict_proba(X_final_test)[:, 1]
+
+# 3. Calcular o score AUC
+auc_score = roc_auc_score(y_final_test_encoded, y_pred_probs)
+print(f"--- Score AUC Final (no conjunto test.csv) ---")
+print(f"AUC: {auc_score:.4f}")
+
+# 4. Calcular os pontos da Curva ROC
+fpr, tpr, thresholds = roc_curve(y_final_test_encoded, y_pred_probs)
+
+# 5. Plotar a Curva ROC
+print("\n--- Gerando a Curva ROC ---")
+plt.figure(figsize=(8, 6))
+plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'Curva ROC (área = {auc_score:.2f})')
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Classificador Aleatório')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('Taxa de Falsos Positivos (FPR)')
+plt.ylabel('Taxa de Verdadeiros Positivos (TPR)')
+plt.title('Curva ROC para o Modelo Final')
+plt.legend(loc="lower right")
+plt.grid()
+plt.show()
+### Salvando o Pipeline de Produção Otimizado
+
+Após treinar, validar e **otimizar** nosso modelo com sucesso, a etapa final é **persistir** nosso trabalho. Atualmente, o `modelo_final_otimizado` (que contém toda a lógica de pré-processamento e o modelo treinado com os melhores hiperparâmetros) existe apenas na memória. Para que possamos usá-lo em nossa API ou dashboard, precisamos salvá-lo em um ficheiro.
+
+Utilizamos a biblioteca `joblib`, que é otimizada para salvar objetos Python que contêm grandes arrays de dados, tornando-a a escolha padrão para modelos Scikit-learn.
+
+### O que Este Código Faz?
+
+1.  **Definição do Nome do Ficheiro:**
+    * Definimos um nome claro e versionado para o nosso modelo final, `modelo_final_otimizado_v1.joblib`. Versionar o nome do ficheiro é uma boa prática em MLOps, pois permite rastrear diferentes versões do modelo ao longo do tempo.
+
+2.  **Salvando o Objeto Otimizado (`joblib.dump`):**
+    * O comando `joblib.dump` serializa o nosso objeto `modelo_final_otimizado` e o grava no ficheiro especificado. Este ficheiro agora contém todo o "conhecimento" do nosso projeto: as transformações de pré-processamento, os **melhores hiperparâmetros encontrados pelo GridSearchCV** e os pesos do modelo RandomForest treinado com essa configuração otimizada.
+
+3.  **Teste de Carregamento e Verificação (`joblib.load`):**
+    * Como uma etapa final de verificação, imediatamente carregamos o ficheiro salvo de volta para uma nova variável (`loaded_optimized_model`).
+    * Em seguida, usamos este modelo recém-carregado para fazer uma previsão em um único exemplo dos nossos dados de teste. Se a previsão for executada sem erros, temos a confirmação de que o ficheiro foi salvo corretamente e está pronto para ser implantado na nossa aplicação final (Fase 3).
+import joblib
+
+# Definir o nome do arquivo para o modelo final e otimizado
+filename_final = 'modelo_final_otimizado_v1.joblib'
+
+# Salvar o pipeline OTIMIZADO que foi o resultado do GridSearchCV
+joblib.dump(modelo_final_otimizado, filename_final)
+
+print(f"--- Modelo Otimizado salvo com sucesso! ---")
+print(f"O pipeline completo foi salvo no ficheiro: '{filename_final}'")
+
+# Teste de Carregamento (opcional, mas recomendado)
+loaded_optimized_model = joblib.load(filename_final)
+print(f"\n--- Teste de Carregamento ---")
+print("Modelo otimizado carregado com sucesso a partir do ficheiro.")
+### Análise e Interpretabilidade do Modelo (XAI - Explainable AI)
+
+Um modelo com alta acurácia é um ótimo resultado, mas no mundo real, muitas vezes precisamos ir além e entender o **"porquê"** por trás de suas previsões. Prever se um passageiro ficará satisfeito é útil, mas entender *quais fatores* levam a essa satisfação gera insights de negócio que podem guiar ações estratégicas.
+
+Nesta seção, vamos "abrir a caixa-preta" do nosso `RandomForestClassifier` para extrair esse conhecimento. Utilizaremos um conjunto de técnicas de Explicabilidade em IA (XAI) para responder a três perguntas fundamentais em uma ordem lógica, indo do geral para o específico:
+
+1.  **Quais são as variáveis mais importantes para o modelo?** (Visão Macro)
+2.  **Como essas variáveis impactam as previsões?** (Visão de Impacto)
+3.  **Por que uma previsão específica foi feita para um passageiro?** (Visão Local)
+
+### Visão Geral: Quais Variáveis São Mais Importantes?
+
+Para começar, vamos obter uma visão geral da importância de cada variável. Faremos isso de duas maneiras complementares para garantir uma análise robusta.
+
+  * **MDI (Mean Decrease in Impurity):** Uma medida rápida, baseada em quão bem uma variável consegue "purificar" os nós das árvores de decisão durante o treinamento.
+  * **Permutation Importance:** Uma técnica mais confiável e realista. Ela mede a queda na performance do modelo (no conjunto de teste) quando os valores de uma variável são aleatoriamente embaralhados. Uma queda grande significa que o modelo depende muito daquela variável.
+
+#### O que Este Código Faz?
+
+1.  **Extração do Modelo e Nomes das Features:**
+
+      * Primeiro, extraímos o modelo `RandomForestClassifier` já treinado de dentro do nosso `full_pipeline`.
+      * Em seguida, recuperamos os nomes de todas as features após a etapa de pré-processamento. Isso é crucial porque o `OneHotEncoder` cria novas colunas, e precisamos saber a que cada uma se refere.
+
+2.  **Cálculo da Importância MDI (Gini):**
+
+      * Acessamos o atributo `modelo_rf_final.feature_importances_` para obter a importância MDI de cada coluna processada.
+      * **Ponto-chave:** Como o `OneHotEncoder` divide uma variável categórica (ex: `Type of Travel`) em várias colunas (`Type of Travel_Personal Travel`, `Type of Travel_Business`), o código utiliza a função `collapse_dummy` e um `groupby` para somar a importância dessas colunas de volta à sua variável original. Isso nos dá uma visão muito mais clara e acionável.
+
+3.  **Cálculo da Permutation Importance:**
+
+      * Utilizamos a função `permutation_importance` do Scikit-learn, que é a abordagem mais recomendada.
+      * Passamos o `full_pipeline` inteiro para a função, junto com os dados de teste **brutos** (`X_test`, `y_test`). Isso garante que a permutação seja avaliada de forma justa, considerando todo o fluxo de pré-processing.
+      * O código vai além e calcula a importância usando **múltiplas métricas** (`balanced_accuracy`, `roc_auc`, etc.), pois a relevância de uma feature pode depender do que consideramos um "sucesso" para o negócio.
+
+# --- MDI (Gini) Importance ---
+
+# Extrair o modelo RandomForest treinado do pipeline otimizado
+modelo_rf_final = full_pipeline.named_steps['classifier']
+
+# Extrair os nomes das features do pré-processador
+num_features = list(numerical_features)
+cat_features = list(full_pipeline.named_steps['preprocessor']
+                   .named_transformers_['cat']
+                   .get_feature_names_out(categorical_features))
+
+# Combinar todos os nomes de features
+all_features = num_features + cat_features
+
+# Calcula a importância MDI
+mdi = pd.DataFrame({
+    "feature": all_features,
+    "importance": modelo_rf_final.feature_importances_
+}).sort_values("importance", ascending=False)
+
+# Função para agregar a importância de features criadas pelo OneHotEncoder
+def collapse_dummy(name: str,
+                   ohe_prefixes=("class","type_of_travel","customer_type","gender")) -> str:
+    for p in ohe_prefixes:
+        if name.startswith(p + "__") or name.startswith(p + "_"):
+            return p
+    return name
+
+# Agrega a importância por variável original
+mdi["orig"] = mdi["feature"].map(collapse_dummy)
+mdi_agg = (mdi.groupby("orig", as_index=False)["importance"]
+           .sum()
+           .sort_values("importance", ascending=False))
+
+print("--- Análise 1: Importância de Variáveis (Feature Importance) ---")
+print(" ")
+print(f'As Top 5 variévais mais usadas no treinamento: {mdi_agg.head(5)}')
+print(" ")
+print("[1.2] Plotando as 10 variáveis mais importantes (MDI Agregado).")
+print(" ")
+# Plota o Top 10 de importância MDI
+topN = 10
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Paleta de cores progressiva
+palette = sns.color_palette("viridis", n_colors=topN)
+
+sns.barplot(
+    data=mdi_agg.head(topN),
+    x="importance",
+    y="orig",
+    palette=palette,
+    ax=ax
+)
+
+# Rótulos e título
+ax.set_xlabel("Importância (MDI)", fontsize=12)
+ax.set_ylabel("Variável Original", fontsize=12)
+ax.set_title(f"Top {topN} Variáveis mais Importantes (RandomForest - MDI)",
+             fontsize=14, weight="bold")
+
+# Mostra valores nas barras
+for i, (imp, feat) in enumerate(zip(mdi_agg.head(topN)["importance"], mdi_agg.head(topN)["orig"])):
+    ax.text(imp + 0.001, i, f"{imp:.3f}", va="center", fontsize=10)
+
+# Texto do rodapé
+notes = (
+ " --> O MDI listou Online boarding colocou a variável como a mais importante. \n"
+ " --> Porém  isto não significa que oferecer embarque online aumenta diretamente a satisfação. \n"
+" --> O que podemos observar é que, durante o processo de  treinamento, essa variéval contribuiu \n"
+"fortemente para separar os grupos (satisfeitos vs. instisfeitos). \n"
+" --> Para avaliar a direção do efeito (positivo ou negativo) e sua robustez fora da amostra \n"
+" precisamos confirmar com análises adicionais."
+" Portanto: não dá para identificar direção (positivo/negativo) só olhando MDI."
+)
+
+# Ajuste de espaço e rodapé
+plt.subplots_adjust(bottom=0.45)
+fig.text(0.02, 0.02, notes, ha="left", va="bottom", fontsize=11,
+         bbox=dict(boxstyle="round,pad=0.6", fc="#f9f9f9", ec="#cccccc"))
+
+sns.despine(left=True, bottom=True)
+plt.show()
+# --- Permutation Importance ---
+
+print("\n[1.3] Calculando a Importância por Permutação (Permutation Importance)...")
+print(" ")
+print("Isso pode levar alguns segundos, pois o modelo é reavaliado múltiplas vezes.")
+print("Avaliando com base em Acurácia (referência global - as classes estão balanceadas.")
+
+# Roda a Permutation Importance com diferentes métricas de avaliação
+r_acc = permutation_importance(full_pipeline, X_test, y_test, n_repeats=10, random_state=42, scoring="accuracy")
+'''
+# Balanced accuracy
+r_bal = permutation_importance(full_pipeline, X_test, y_test, n_repeats=10, random_state=42, scoring="balanced_accuracy")
+# ROC AUC (RandomForestClassifier tem predict_proba)
+r_auc = permutation_importance(full_pipeline, X_test, y_test, n_repeats=10, random_state=42, scoring="roc_auc")
+# 3) Recall da classe "satisfied" (alvo específico)
+recall_pos = make_scorer(recall_score, pos_label="satisfied")
+r_rec = permutation_importance(full_pipeline, X_test, y_test, n_repeats=10, random_state=42, scoring=recall_pos)
+# 4) F2-score (pesa mais recall)
+f2 = make_scorer(fbeta_score, beta=2, pos_label="satisfied")
+r_f2 = permutation_importance(full_pipeline, X_test, y_test,
+                              n_repeats=10, random_state=42,
+                              scoring=f2)
+'''
+# Escolhe a métrica a ser visualizada
+metrica_perm = r_acc
+
+# Empacota o resultado para visualização
+perm_teste = pd.DataFrame({
+    "feature": X_test.columns,
+    "importance_mean": metrica_perm.importances_mean,
+    "importance_std":  metrica_perm.importances_std
+}).sort_values("importance_mean", ascending=False)
+
+print("\n[1.4] Plotando as 10 variáveis mais importantes (Permutation Importance - Acurácia Balanceada).")
+# Top 10 variáveis mais importantes pela permutation importance
+top = perm_teste.head(10).sort_values("importance_mean", ascending=False)
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Paleta progressiva
+palette = sns.color_palette("viridis", n_colors=len(top))
+
+sns.barplot(
+    data=top,
+    x="importance_mean",
+    y="feature",
+    palette=palette,
+    errorbar=None,
+    ax=ax
+)
+
+# Limite do eixo X com folga
+ax.set_xlim(0, top["importance_mean"].max() * 1.15)
+
+# Valores nas barras
+for p, val in zip(ax.patches, top["importance_mean"].values):
+    ax.text(
+        p.get_width() + (0.01 * top["importance_mean"].max()),
+        p.get_y() + p.get_height()/2,
+        f"{val:.3f}",
+        va="center",
+        fontsize=10
+    )
+
+# Rótulos e título
+ax.set_xlabel("Queda média na métrica escolhida (Δ score)", fontsize=12)
+ax.set_ylabel("Variável", fontsize=12)
+ax.set_title("Permutation Importance (Dados de Teste)", fontsize=14, weight="bold")
+
+# --- Rodapé (notes que você pode preencher) ---
+notes = (
+ "Permutation Importance\n"
+    "\n"
+    "Interpretação dos resultados:\n"
+    "• type_of_travel e inflight_wifi_service são as variáveis que mais sustentam a acurácia do modelo - \n "
+    "são drivers fundamentais para a separação entre satisfeitos e insatisfeitos.\n"
+    "• food_and_drink e arrival_delay_in_minutes, ao contrário, não afetam a acurácia, \n"
+    "mostrando que essas informações não são relevantes para a previsão de satisfação \n"
+    "no contexto deste modelo e conjunto de dados. \n"
+    "• Permutation mostra impacto na performance, mas não mostra se o impacto é positivo ou negativo."
+)
+
+plt.subplots_adjust(bottom=0.50)  # espaço para o rodapé
+fig.text(
+    0.02, 0.02, notes,
+    ha="left", va="bottom",
+    fontsize=11,
+    bbox=dict(boxstyle="round,pad=0.7", fc="#f9f9f9", ec="#cccccc")
+)
+
+sns.despine(left=True, bottom=True)
+plt.show()
+
+### Aprofundando o Impacto e as Interações com SHAP
+
+Agora que sabemos *quais* variáveis são importantes, queremos entender *como* elas influenciam as previsões. Para isso, usaremos a biblioteca `shap`, uma ferramenta poderosa baseada na teoria dos jogos que explica a contribuição de cada feature para cada previsão individual.
+
+#### O que Este Código Faz?
+
+1.  **Preparação e Amostragem:**
+
+      * Para que a análise seja computacionalmente viável, criamos uma amostra do nosso conjunto de teste para servir como "fundo" (`background data`).
+      * Utilizamos `StratifiedShuffleSplit` para garantir que essa amostra mantenha a mesma proporção de passageiros satisfeitos e insatisfeitos do conjunto original, tornando a análise mais precisa.
+      * Instanciamos o `shap.TreeExplainer`, otimizado para modelos baseados em árvores como o Random Forest.
+
+2.  **Visão Global (`Summary Plot`):**
+
+      * Calculamos os valores SHAP para a nossa amostra e geramos um `summary_plot`.
+      * Este gráfico é extremamente rico: ele ordena as variáveis por importância, mas também mostra o **impacto** de cada uma. Pontos à direita do eixo zero representam um impacto positivo na previsão de "satisfação", e pontos à esquerda, um impacto negativo. A cor indica se o valor da feature era alto (vermelho) ou baixo (azul).
+
+3.  **Análise de Dependência e Interação (`Dependence Plot`):**
+
+      * Geramos um `dependence_plot` para uma variável específica. Ele mostra como a previsão do modelo muda à medida que o valor daquela variável muda.
+      * Sua principal vantagem é a capacidade de sugerir **interações**: os pontos podem ser coloridos com base nos valores de uma segunda variável, revelando se a relação da primeira variável com o alvo depende de uma terceira.
+print("\n--- Análise 2: Aprofundando o Impacto com SHAP ---")
+print(" ")
+
+# Transforma os dados de teste uma vez para usar com SHAP
+print("\n[2.1] Preparando dados para o SHAP: Criando uma amostra de fundo estratificada...")
+print(" ")
+X_test_processed = full_pipeline.named_steps["preprocessor"].transform(X_test)
+if hasattr(X_test_processed, "toarray"):
+    X_test_tr_dense = X_test_processed.toarray()
+else:
+    X_test_tr_dense = X_test_processed
+
+# Amostra extratificada para manter a proporção entre as classes
+n = min(200, len(y_test)) # Usar no máximo 1000 amostras para o background
+frac = n / len(y_test)
+sss = StratifiedShuffleSplit(n_splits=1, test_size=frac, random_state=42)
+_, idx = next(sss.split(X_test_tr_dense, y_test))
+X_bg = X_test_tr_dense[idx]
+y_bg = y_test.iloc[idx]
+
+print(f"-> Amostra de fundo ('background data') criada com shape: {X_bg.shape}")
+print(" ")
+# Instancia o TreeExplainer com o modelo final
+expl = shap.TreeExplainer(modelo_rf_final)
+
+# Calcula as contribuições SHAP no background data
+print("[2.2] Calculando os valores SHAP para a amostra de fundo...")
+print("Esta pode ser uma etapa demorada dependendo do tamanho da amostra.")
+print(" ")
+shap_vals = expl.shap_values(X_bg)
+
+# SHAP precisa de um DataFrame com nomes de colunas para os plots
+X_bg_df = pd.DataFrame(X_bg, columns=all_features)
+
+# Para classificação binária, selecionamos os SHAP values da classe positiva (ex: "satisfied")
+classes = list(modelo_rf_final.classes_)
+pos_idx = classes.index("satisfied")
+
+if isinstance(shap_vals, list):
+    shap_class = shap_vals[pos_idx]
+else:
+    shap_class = shap_vals[:, :, pos_idx]
+
+# --- Visão Global: Summary Plot ---
+print("\n[2.3] Gerando Gráfico de Resumo Global (SHAP Summary Plot)...")
+print(" ")
+shap.summary_plot(shap_class, X_bg_df, show=True)
+
+# --- Análise de Dependência e Interação ---
+print("\n[2.4] Gerando Gráfico de Dependência para 'online_boarding' com interação por tipo de viagem...")
+print(" ")
+col_proc = "online_boarding"
+
+# Para visualizar a interação, colorimos pelo tipo de viagem (Type of Travel)
+shap.dependence_plot(col_proc, shap_class, X_bg_df, interaction_index="type_of_travel_Personal Travel")
+
+print(""" Resumo - SHAP Summary e Dependence Plots
+Summary Plot (Beeswarm) do SHAP:
+   Variáveis no topo (inflight_wifi_service, online_boarding) → são aquelas que, em média, mais deslocam as previsões (aumentando ou diminuindo a probabilidade de satisfação).
+   Variáveis no fim da lista (gate_location, age) → têm impacto pequeno ou quase nulo no resultado do modelo.
+SHAP Dependence Plot - Análise da variável online_boarding, com interação em type_of_travel.
+   online_boarding: A relação é monotônica crescente: quanto maior a nota de embarque online, maior o valor SHAP ⇒ maior probabilidade de satisfação.
+   Interação com Type of Travel: efeito positivo mais forte para Business travel do que para Personal travel.
+
+Conclusão:
+No geral, o modelo depende fortemente de fatores ligados à experiência digital (wifi, embarque online),
+sendo o inflight_wifi_service e online_boarding aparecem no topo → são os maiores direcionadores do modelo.
+Analisando uma das variável de experiência digial associada a tipos de viagem: a online_boarding é um forte preditor de satisfação:
+passageiros que avaliam bem esse serviço tendem a estar satisfeitos. O efeito é amplificado em viagens de negócios:
+para esse grupo, um embarque online eficiente é especialmente decisivo para gerar satisfação.
+Para viagens pessoais, o embarque online ainda ajuda, mas não é tão crítico.
+O perfil do passageiro (tipo de viagem, fidelidade, classe) também é decisivo.
+Conforto e serviços de bordo importam, mas em grau menor.
+Atrasos, idade e portão de embarque não influenciam o resultado neste conjunto de dados.
+""")
+### Explicando Decisões Individuais (Visão Local)
+
+A análise final é a mais granular: por que um passageiro específico recebeu a previsão que recebeu? Isso é fundamental para auditar o modelo, explicar decisões para stakeholders e construir confiança.
+
+#### O que Este Código Faz?
+
+1.  **Função de Explicação (`explain_passenger_pretty`):**
+
+      * O código encapsula a lógica de explicação em uma função reutilizável que recebe o índice de um passageiro no conjunto de teste.
+      * A função pega os dados brutos daquele passageiro, passa pelo pipeline para obter a predição e os valores SHAP específicos para essa instância.
+      * **Ponto-chave:** Para facilitar a interpretação, a função mapeia os valores das features (que estão normalizados ou codificados) de volta para seus **valores originais**, mostrando, por exemplo, `Online boarding = 5` em vez de um valor escalado.
+
+2.  **Visualização com Waterfall Plot:**
+
+      * Para cada passageiro, é gerado um `shap.plots.waterfall`.
+      * Este gráfico é uma decomposição visual da previsão. Ele começa com a previsão média do modelo (`E[f(X)]`) e mostra como o valor de cada feature daquele passageiro "empurrou" a previsão para cima (em vermelho) ou para baixo (em azul) até chegar ao resultado final `f(x)`.
+
+print("\n--- Análise 3. Explicando Previsões Individuais (Visão Local) ---")
+print(" ")
+
+def explain_passenger_pretty(i: int, top_n: int = 12):
+    """Explica UMA amostra do X_test (índice i) usando SHAP,
+    mostrando valores ORIGINAIS nas labels quando houver mapeamento."""
+    # Prepara a linha de dados bruta e transformada
+    X_row_raw = X_test.iloc[[i]]
+    y_true = y_test.iloc[i]
+    X_row_tr = full_pipeline.named_steps["preprocessor"].transform(X_row_raw)
+    X_row_dense = X_row_tr.toarray() if hasattr(X_row_tr, "toarray") else X_row_tr
+
+    # Predição do pipeline
+    proba = full_pipeline.predict_proba(X_row_raw)[0]
+    pred_idx = int(np.argmax(proba))
+    pred_lbl = modelo_rf_final.classes_[pred_idx]
+    pred_prob = proba[pred_idx]
+    print(f"PASSAGEIRO ÍNDICE={i} | REAL={y_true} | PREVISÃO={pred_lbl} (p={pred_prob:.3f})")
+    print(" ")
+
+    # SHAP local para a classe positiva
+    sv_all = expl.shap_values(X_row_dense)
+    if isinstance(sv_all, list):
+        sv = sv_all[pos_idx][0]
+        base = expl.expected_value[pos_idx]
+    else:
+        sv = sv_all[0, :, pos_idx]
+        base = expl.expected_value[pos_idx]
+
+    # Vetor de exibição com valores originais
+    display_vals = X_row_dense[0].astype(object).copy()
+    for j, name in enumerate(all_features):
+        original_name = collapse_dummy(name)
+        if original_name in X_row_raw.columns:
+            display_vals[j] = X_row_raw.iloc[0][original_name]
+
+    # Waterfall plot
+    print("Gerando gráfico Waterfall para esta previsão...")
+    print(" ")
+    exp = shap.Explanation(values=sv, base_values=base,
+                           data=np.array(display_vals, dtype=object),
+                           feature_names=all_features)
+    shap.plots.waterfall(exp, max_display=top_n)
+
+# Exemplo: explicar a primeira previsão do conjunto de teste
+print("\n[3.1] Explicando uma previsão correta...")
+print(" ")
+y_pred_test = full_pipeline.predict(X_test)
+acertos = np.where(y_pred_test == y_test.values)[0]
+if len(acertos) > 0:
+    explain_passenger_pretty(i=acertos[0], top_n=10)
+
+print("\n[3.2] Explicando uma previsão incorreta...")
+print(" ")
+erros = np.where(y_pred_test != y_test.values)[0]
+if len(erros) > 0:
+    explain_passenger_pretty(i=erros[0], top_n=10)
+
+print(" ")
+print("""
+  passageiro índice 0
+  Linha base = 0.433 (probabilidade média de satisfação)
+  Real: neutral or dissatisfied
+  Predição do modelo: neutral ou insatisfied (p=1)
+  Conclusão: mesmo com variáveis como Loyal Customer, seat_comfort e inflight_service)
+  contribuindo (vermelho) para uma boa valiação, variáveis mais críticas (Type_of_travel, inflight_wifi_service,
+  online_boarding, ..) puxaram a predição para insatisfação (azul). Confirmando as análise anteriores que
+  evidenciaram a influência de algumas variáveis na predição (positiva/negativa).
+
+  passageiro índice 23
+  Linha base = 0.433
+  Real: satisfied
+  Predição do modelo: neutral ou insatisfeita (p=0.930)
+  Conclusão: Aqui o modelo classificou errado. Neste caso, podemos observar que as notas baixas nas variáveis
+  online_boarding, inflight_wifi_service foram decisivas para derrubar a predição.
+""")
+### Isolando Efeitos com Dependência Parcial (PDP & ICE)
+
+Como uma análise complementar, os Gráficos de Dependência Parcial (PDP) nos ajudam a visualizar a relação entre uma ou duas variáveis e a predição do modelo, marginalizando o efeito de todas as outras. Já o ICE (Individual Conditional Expectation) nos mostra essa relação para cada instância individual.
+
+#### O que Este Código Faz?
+
+1.  **PDP e ICE Univariado:**
+
+      * Utilizamos a função `PartialDependenceDisplay.from_estimator` para visualizar o efeito de uma única variável.
+      * Ao usar `kind="both"`, o gráfico plota a linha do PDP (o efeito médio, em azul) e as linhas do ICE (o efeito para cada observação, em cinza claro). Isso é ótimo para ver se o comportamento médio se aplica a todos os passageiros ou se existem subgrupos com comportamentos diferentes.
+
+2.  **PDP Bivariado (Interações):**
+
+      * Geramos um PDP 2D para um par de variáveis. O resultado é um mapa de calor que mostra como a probabilidade de satisfação muda à medida que os valores das duas variáveis mudam simultaneamente, sendo uma forma explícita de visualizar interações.
+print("\n--- Análise 4: Isolando Efeitos com Dependência Parcial (PDP & ICE) ---")
+print(" ")
+
+# Usaremos os mesmos dados de teste transformados (X_test_tr_dense)
+# e os nomes das features (all_features)
+# A classe alvo é o índice da classe positiva (pos_idx)
+
+# Helper para pegar o índice da coluna transformada pelo nome
+def fidx(name: str) -> int:
+    try:
+        return list(all_features).index(name)
+    except ValueError:
+        raise ValueError(f"Coluna '{name}' não encontrada.")
+
+# Features a serem analisadas
+univariadas = [
+    "online_boarding",
+    "inflight_wifi_service",
+    "seat_comfort",
+    "checkin_service",
+]
+par_2d = ("online_boarding", "inflight_wifi_service")
+print("\n[4.1] Gerando gráficos PDP/ICE para 4 variáveis univariadas...")
+print(" ")
+
+# --- PDP+ICE univariado (4 painéis) ---
+print("\n--- PDP/ICE para features individuais ---")
+fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
+for ax, name in zip(axes.ravel(), univariadas):
+    PartialDependenceDisplay.from_estimator(
+        modelo_rf_final, X_test_tr_dense, [fidx(name)],
+        kind="both",             # 'average' (PDP), 'individual' (ICE) ou 'both'
+        target=pos_idx,          # classe "satisfied"
+        grid_resolution=30,
+        ice_lines_kw={"alpha": 0.1, "linewidth": 0.7},
+        pd_line_kw={"linewidth": 3, "color": "red"},
+        ax=ax
+    )
+    ax.set_title(f"PDP/ICE — {name}")
+    ax.set_xlabel(name)
+    ax.set_ylabel("Probabilidade de Satisfação")
+plt.suptitle("Gráficos de Dependência Parcial e Efeitos Condicionais Individuais", fontsize=16)
+plt.show()
+
+# --- PDP 2D (par de variáveis) ---
+print(" ")
+print("\n--- PDP 2D para Interação entre Variáveis ---")
+print(" ")
+fig, ax = plt.subplots(1, 1, figsize=(7, 6))
+PartialDependenceDisplay.from_estimator(
+    modelo_rf_final, X_test_tr_dense, [(fidx(par_2d[0]), fidx(par_2d[1]))],
+    kind="average", # 2D só mostra o PDP médio
+    target=pos_idx,
+    grid_resolution=20,
+    ax=ax
+)
+ax.set_title(f"PDP 2D — {par_2d[0]} vs {par_2d[1]}")
+plt.show()
+
+print("""
+   Variáveis destacadas no SHAP Summary/Permutation: online_boarding, inflight_wifi_service → apareceram no topo da importância.
+   Variávesi de interesse de negócio: seat_comfort e checkin_service (escolha da companhia aérea)
+   online_boarding (x7): PDP crescente → embarque online bem avaliado aumenta chance de satisfação.
+   inflight_wifi_service (x8): padrão semelhante → wifi bom puxa satisfação para cima.
+   seat_comfort(x13): impacto positivo, mas mais suave.
+   checkin_service(x14): efeito menor, mas consistente.
+   PDP 2D (online_boarding × wifi): mostra que quando ambos são altos, a satisfação cresce ainda mais.
+   Podemos observar que quando pelo menos uma das variáveis está alta (ex.: boarding alto OU wifi alto), a probabilidade de satisfação sobe.
+   Quando as duas estão altas ao mesmo tempo → a região é a mais clara → maior probabilidade prevista.
+""")
+### Geração Automática do Relatório de Explicabilidade (XAI)
+
+**Descrição:**
+
+Este bloco de código finaliza a fase de análise e serve como uma ponte para a entrega do projeto. Sua principal função é consolidar todos os insights obtidos nas etapas anteriores de XAI (MDI, Permutation Importance, SHAP, PDP/ICE) em um único artefato de texto.
+
+Ao ser executado, o script gera automaticamente um arquivo Markdown (`relatorio_xai.md`) que funciona como:
+
+* Um artefato de **documentação** robusto para o repositório no GitHub, atendendo à exigência do projeto.
+* Um **roteiro e guia de storytelling** para a gravação do vídeo explicativo, garantindo que todas as etapas e conclusões sejam apresentadas de forma clara e lógica.
+* Um resumo executivo que facilita a comunicação dos resultados técnicos para uma audiência diversa.
+# ==== GERAR RELATÓRIO XAI AUTOMÁTICO ====
+from datetime import datetime
+import pandas as pd
+import atexit
+from pathlib import Path
+
+def _df_to_md(df: pd.DataFrame, title: str, n: int = 10) -> str:
+    if isinstance(df, pd.DataFrame) and not df.empty:
+        return f"### {title}\n\n" + df.head(n).to_markdown(index=False) + "\n\n"
+    return f"### {title}\n\n*(dados não disponíveis no ambiente)*\n\n"
+
+def generate_xai_report(
+    mdi_agg=None,
+    perm_teste=None,
+    out_path: str = "relatorio_xai.md",
+    perm_metric_name: str | None = None
+) -> str:
+    """Gera / atualiza o relatório Markdown de XAI com os objetos já existentes no notebook."""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    title = "# Relatório de Explicabilidade (XAI) — Classificação de Satisfação de Passageiros\n"
+    intro = (
+        f"_Gerado em {now}_\n\n"
+        "Resumo das análises **MDI**, **Permutation Importance**, **SHAP (summary, dependence e local)** "
+        "e **PDP/ICE** realizadas neste notebook.\n\n"
+    )
+    executive = (
+        "## Resumo Executivo\n\n"
+        "- **Experiência digital** lidera: **online_boarding** e **inflight_wifi_service**.\n"
+        "- **Perfil do passageiro** é decisivo: **Business Travel**, **Loyal Customer** e **Classe Business** aumentam satisfação; "
+        "**Personal Travel**, **Disloyal Customer** e **Classe Economy** reduzem.\n"
+        "- **Serviços de bordo** (conforto, entretenimento, check-in) têm impacto positivo moderado.\n"
+        "- **Baixa relevância**: idade, atrasos e portão de embarque.\n\n"
+    )
+
+    # MDI
+    mdi_section = (
+        "## MDI — Mean Decrease in Impurity\n\n"
+        "Indicador interno do RF (sanity check) agregado por variável original (somando dummies do OHE).\n\n"
+        + _df_to_md(mdi_agg, "Top variáveis por MDI (agregado)", 10)
+    )
+
+    # Permutation
+    metric_alias = perm_metric_name or "métrica escolhida"
+    if isinstance(perm_teste, pd.DataFrame) and "metric" in perm_teste.columns and pd.notna(perm_teste["metric"]).any():
+        metric_alias = str(perm_teste.loc[pd.notna(perm_teste["metric"]), "metric"].iloc[0])
+    perm_section = (
+        "## Permutation Importance\n\n"
+        "Impacto **real** na performance ao embaralhar uma variável nos **dados de teste**.\n\n"
+        f"Métrica utilizada: **{metric_alias}**.\n\n"
+        + _df_to_md(perm_teste, "Top variáveis por queda média na métrica (importance_mean)", 10)
+        + "### Interpretação destacada\n"
+          "- **type_of_travel** e **inflight_wifi_service** sustentam a acurácia; são drivers fundamentais.\n"
+          "- **food_and_drink** e **arrival_delay_in_minutes** tiveram impacto desprezível.\n\n"
+    )
+
+    # SHAP
+    shap_section = (
+        "## SHAP — Summary & Dependence\n\n"
+        "- Valores SHAP **positivos** → puxam para **satisfied**; **negativos** → **neutral/unsatisfied**.\n"
+        "- **Wifi** e **Online boarding**: notas altas aumentam satisfação; notas baixas reduzem.\n"
+        "- **Type of travel**: *Business* ↑; *Personal* ↓. **Class**: *Business* ↑; *Eco* ↓. "
+        "**Customer type**: *Loyal* ↑; *Disloyal* ↓.\n"
+        "- **Dependence (online_boarding)**: relação **monotônica crescente**; efeito **mais forte** em *Business Travel*.\n\n"
+    )
+
+    # Local & PDP/ICE
+    local_section = (
+        "## SHAP Local — Waterfall\n\n"
+        "- Casos corretos explicados por notas baixas em wifi/boarding; falso negativo mostrou supervalorização de problemas digitais.\n\n"
+    )
+    pdp_section = (
+        "## PDP/ICE\n\n"
+        "- **PDP** (tendência média) e **ICE** (variação individual) confirmam efeitos crescentes para boarding e wifi.\n"
+        "- **PDP 2D (boarding × wifi)**: efeito conjunto positivo quando ambos estão altos.\n\n"
+    )
+
+    limits_section = (
+        "## Limitações e Boas Práticas\n\n"
+        "- **MDI** é triagem interna (não prova impacto).\n"
+        "- **Permutation** depende da métrica e pode ser afetada por **colinearidade** (considere grupos correlacionados).\n"
+        "- **SHAP** deve ser lido com a **métrica de negócio** e dados recentes (monitorar drift).\n\n"
+    )
+
+    actions_section = (
+        "## Recomendações de Ação\n\n"
+        "1) Priorizar melhorias em **online boarding** e **inflight wifi**.\n"
+        "2) Customizar ofertas por **tipo de viagem** e **fidelidade**.\n"
+        "3) Monitorar KPIs de conforto/check-in (impacto moderado, porém consistente).\n"
+        "4) Despriorizar fatores de baixo impacto (idade, atrasos, gate) neste contexto.\n\n"
+    )
+
+    report = (
+        title + intro + executive + mdi_section + perm_section
+        + shap_section + local_section + pdp_section + limits_section + actions_section
+    )
+
+    Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+    Path(out_path).write_text(report, encoding="utf-8")
+    print(f"Relatório XAI salvo em: {out_path}")
+    return str(out_path)
+
+# Tenta pegar objetos do ambiente (se existirem) e já gerar automaticamente
+_mdi = globals().get("mdi_agg", None)
+_perm = globals().get("perm_teste", None)
+_generate_path = "relatorio_xai.md"
+generate_xai_report(_mdi, _perm, out_path=_generate_path)
+
+# (Opcional) fallback: também gera o relatório ao encerrar o kernel
+atexit.register(lambda: generate_xai_report(globals().get("mdi_agg"), globals().get("perm_teste"), out_path=_generate_path))
+# ==== FIM BLOCO ====
+
+### Conclusão Final do Projeto
+
+Este projeto teve como objetivo desenvolver um modelo de Machine Learning para prever a satisfação de passageiros de uma companhia aérea. Após um ciclo completo de análise, pré-processamento e modelagem, chegamos às seguintes conclusões:
+
+* **Metodologia e Modelo Final:** O modelo selecionado foi um `RandomForestClassifier`, cujos hiperparâmetros foram otimizados através de `GridSearchCV`. Foi construído um pipeline de pré-processamento robusto para tratar dados ausentes, escalar features numéricas com `StandardScaler` e codificar features categóricas com `OneHotEncoder`. A inclusão do `StandardScaler`, embora não estritamente necessária para modelos de árvore, é uma boa prática que garante a flexibilidade do pipeline para testes futuros com outros algoritmos.
+
+* **Performance de Classificação:** O modelo final alcançou um desempenho excelente e consistente no conjunto de teste dedicado (`test.csv`), atingindo métricas de alto nível:
+    * **Acurácia Geral de 96%**.
+    * **F1-Score Ponderado de 0.96**.
+    * **Score ROC-AUC de 0.99**. Este valor, muito próximo de 1.0, indica uma capacidade quase perfeita do modelo em discriminar corretamente entre passageiros satisfeitos e insatisfeitos.
+
+* **Análise de Generalização (Overfitting):** A validação do modelo demonstrou alta capacidade de generalização, sem sinais de overfitting. As três principais evidências para esta conclusão são:
+    1.  **Consistência dos Resultados:** A performance se manteve estável em ~96% tanto no conjunto de teste inicial (separado do `train.csv`) quanto no conjunto de teste final e dedicado (`test.csv`).
+    2.  **Curva de Aprendizagem:** O gráfico da curva de aprendizado mostrou que os scores de treino e de validação convergem para um valor alto, com um "gap" mínimo entre eles, indicando um modelo bem ajustado.
+    3.  **Curva ROC e Score AUC:** A curva ROC demonstrou um excelente equilíbrio entre a taxa de verdadeiros positivos e falsos positivos em todos os limiares de decisão. O score AUC de 0.99 valida a performance do modelo de forma independente do leve desbalanceamento de classes, servindo como uma métrica de validação mais completa que a acurácia isoladamente.
+
+* **Principais Fatores de Satisfação:** A análise de importância das features revelou que os principais preditores da satisfação do cliente são, em ordem:
+    1.  **Embarque Online (`online_boarding`)**
+    2.  **Serviço de Wi-Fi a Bordo (`inflight_wifi_service`)**
+    3.  **Tipo de Viagem (`type_of_travel_Business travel`)**
+
+* **Persistência do Modelo:** O pipeline final foi salvo utilizando a biblioteca `joblib`, gerando o artefato `modelo_final_otimizado_v1.joblib`. A escolha pelo `joblib` em vez do `pickle` (biblioteca padrão do Python) é uma prática recomendada pela documentação do Scikit-learn e validada por análises da comunidade. O `joblib` é otimizado para serializar objetos que contêm grandes arrays numéricos, como os modelos de Machine Learning, resultando em arquivos menores e um processo de salvamento/carregamento significativamente mais rápido. Além da performance, `joblib` é uma escolha mais segura, pois evita os riscos de execução de código arbitrário presentes ao carregar arquivos `pickle` de fontes não confiáveis.
+
+* **Conclusão:** O modelo treinado é altamente preciso, robusto e confiável. As múltiplas métricas de validação confirmam sua eficácia e capacidade de generalização para dados novos. O pipeline final, salvo de forma otimizada e segura, está pronto para ser integrado a uma aplicação (como uma API) para realizar previsões em tempo real.

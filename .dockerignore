@@ -1,0 +1,19 @@
+# Ambientes virtuais e caches
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+
+# Git e arquivos de configuração de IDE
+.git/
+.gitignore
+.idea/
+
+# Arquivos que não são necessários para a aplicação rodar
+notebooks/
+docs/
+tests/
+pytest.ini
+
+# Se o seu app não lê os arquivos CSV diretamente, você pode ignorar a pasta data
+data/

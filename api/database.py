@@ -2,9 +2,11 @@
 
 import sqlite3
 from .models import Passageiro 
+import os
 
-DATABASE_FILE = "passageiros.db"
-
+# DATABASE_FILE = "passageiros.db"
+TEMP_DIR = "/tmp"
+DATABASE_FILE = os.path.join(TEMP_DIR, "passageiros.db")
 
 def create_db_and_tables():
     """

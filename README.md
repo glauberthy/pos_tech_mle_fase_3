@@ -14,7 +14,7 @@ pinned: false
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.35.0-red?style=for-the-badge&logo=streamlit)
 ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.5.0-orange?style=for-the-badge&logo=scikit-learn)
 
-## 🚀 [Acesse a Demonstração Interativa Aqui!](https://huggingface.co/spaces/glauberthy/analise-satisfacao-passageiros)
+## 🚀 <a href="https://huggingface.co/spaces/glauberthy/analise-satisfacao-passageiros" target="_blank">Acesse a Demonstração Interativa Aqui!</a>
 
 Este projeto é uma solução completa de Machine Learning, desenvolvida para o Tech Challenge da Pós-Graduação, que aborda o ciclo de vida de um produto de dados de ponta a ponta: desde a coleta e armazenamento de dados via API até o treino de um modelo preditivo e sua implantação numa aplicação interativa.
 
